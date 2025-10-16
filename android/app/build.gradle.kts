@@ -28,6 +28,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        resValue "string", "admob_app_id", ADMOB_APP_ID
     }
 
     buildTypes {

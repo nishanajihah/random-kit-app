@@ -45,5 +45,6 @@ app.*.map.json
 /android/app/release
 
 # Secrets
-/assets/.env.development
-/assets/.env.production
+.env
+.env.development
+.env.production

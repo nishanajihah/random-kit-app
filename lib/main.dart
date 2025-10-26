@@ -6,14 +6,14 @@ import 'dice_roller_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Determine which environment file to laod
-  const envFile = String.fromEnvironment(
-    'FLUTTER_ENV_FILE',
-    defaultValue: 'assets/.env.development',
+  // Determine which environment file to load
+  const environment = String.fromEnvironment(
+    'ENVIRONMENT',
+    defaultValue: 'development',
   );
 
   // Load secrets
-  await dotenv.load(fileName: envFile);
+  await dotenv.load(fileName: '.env.$environment');
   // Initialize AdMob
   await MobileAds.instance.initialize();
 

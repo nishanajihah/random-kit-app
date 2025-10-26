@@ -1,4 +1,4 @@
-package com.example.random_kit_app
+package com.nishanajihah.randomkit
 
 import io.flutter.embedding.android.FlutterActivity
 

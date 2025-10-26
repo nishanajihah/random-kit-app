@@ -67,7 +67,7 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dice Roller'),
+        title: const Text('Dice Roller', style: TextStyle(color: Colors.white)),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Center(

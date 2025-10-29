@@ -82,9 +82,10 @@ This project is licensed under the MIT License.
 ## 👤 Developer
 
 Created and Develop by Nisha Najihah
-Email: <nishanajihah.dev@gmail.com>
-Linktree: <https://linktr.ee/nisha.najihah>
-GitHub: [@nishanajihah](https://github.com/nishanajihah)
+
+- Email: <nishanajihah.dev@gmail.com>
+- Linktree: <https://linktr.ee/nisha.najihah>
+- GitHub: [@nishanajihah](https://github.com/nishanajihah)
 
 ## 🤝 Contributing
 

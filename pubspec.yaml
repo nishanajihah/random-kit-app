@@ -1,5 +1,5 @@
 name: random_kit_app
-description: "Your all-in-one digital tool for fair, fast, and completely unpredictable outcomes"
+description: "Your all-in-one digital tool for fair, fast, and completely randomize outcomes"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

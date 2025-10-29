@@ -48,7 +48,7 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
-          print('Ad failed to load: $error');
+          // print('Ad failed to load: $error');
         },
       ),
     );

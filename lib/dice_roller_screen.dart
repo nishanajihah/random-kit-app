@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart ';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import 'utils/app_logger.dart';
 import 'package:random_kit_app/dice_logic.dart';
 
 class DiceRollerScreen extends StatefulWidget {
@@ -45,10 +47,13 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
             // Show ad only if successfully loaded
             _isAdLoaded = true;
           });
+          AppLogger.info('✅ AD LOADED SUCCESSFULLY!');
+          // print('✅ AD Loaded Successfully!');
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
-          // print('Ad failed to load: $error');
+          // print('❌ AD Failed to Load: $error');
+          AppLogger.error('❌ AD Failed to Load', error);
         },
       ),
     );

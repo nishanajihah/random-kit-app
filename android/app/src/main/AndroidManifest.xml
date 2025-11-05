@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
     package="com.nishanajihah.randomkit">
+    <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Random Kit"
         android:name="${applicationName}"

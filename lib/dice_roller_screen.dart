@@ -17,6 +17,10 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
 
+  bool _adFailedToLoad = false;
+  int _adRetryAttempt = 0;
+  final int _maxRetryAttempts = 3;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +41,10 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
         dotenv.env['ADMOB_BANNER_ID'] ??
         'ca-app-pub-3940256099942544/6300978111';
 
+    AppLogger.debug(
+      '🎯 Loading ad (attempt ${_adRetryAttempt + 1}/$_maxRetryAttempts) with ID: $adUnitId',
+    );
+
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
       size: AdSize.banner,
@@ -46,23 +54,86 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
           setState(() {
             // Show ad only if successfully loaded
             _isAdLoaded = true;
+            _adFailedToLoad = false;
+            _adRetryAttempt = 0;
           });
           AppLogger.info('✅ AD LOADED SUCCESSFULLY!');
           // print('✅ AD Loaded Successfully!');
         },
         onAdFailedToLoad: (ad, error) {
-          ad.dispose();
           // print('❌ AD Failed to Load: $error');
           AppLogger.error('❌ AD Failed to Load', error);
+          ad.dispose();
+
+          setState(() {
+            _isAdLoaded = false;
+            _adFailedToLoad = true;
+          });
+
+          // Retry Ad Logic for network errors
+          if (error.code == 2 && _adRetryAttempt < _maxRetryAttempts) {
+            _adRetryAttempt++;
+            AppLogger.info('🔄 Retrying ad load in 5 seconds...');
+
+            Future.delayed(const Duration(seconds: 5), () {
+              if (mounted) {
+                _loadBannerAd();
+              }
+            });
+          } else {
+            AppLogger.warning(
+              '⚠️ Max retry attempts reached or non-network error',
+            );
+          }
         },
       ),
     );
     _bannerAd.load();
   }
 
+  Widget _buildAdBanner() {
+    if (_isAdLoaded) {
+      return SizedBox(
+        height: _bannerAd.size.height.toDouble(),
+        width: _bannerAd.size.width.toDouble(),
+        child: AdWidget(ad: _bannerAd),
+      );
+    } else if (_adFailedToLoad) {
+      return Container(
+        height: 50,
+        color: Colors.grey[200],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            Text(
+              'Ad unavailable - Check internet connection',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        height: 50,
+        color: Colors.grey[100],
+        child: const Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+  }
+
   void _rollDice() {
     // Calls the core logic and updates the state (the number on the screen)
     final newRoll = DiceLogic.rollD6();
+    // AppLogger.debug('🎲 Rolled: $newRoll');
+
     setState(() {
       _currentRoll = newRoll;
     });
@@ -113,13 +184,7 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
         ),
       ),
       // AdMob Banner at the bottom
-      bottomNavigationBar: _isAdLoaded
-          ? SizedBox(
-              height: _bannerAd.size.height.toDouble(),
-              width: _bannerAd.size.width.toDouble(),
-              child: AdWidget(ad: _bannerAd),
-            )
-          : Container(height: 0), // if not loaded, height is 0 (efficient)
+      bottomNavigationBar: _buildAdBanner(),
     );
   }
 }

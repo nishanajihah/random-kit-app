@@ -13,17 +13,17 @@ Future<void> main() async {
     'ENVIRONMENT',
     defaultValue: 'development',
   );
-  // print('🔧 ENVIRONMENT: $environment');
+  // Initialize logger
+  AppLogger.initialize(environment);
+  AppLogger.info('🚀 App starting...');
   AppLogger.info('🔧 Environment: $environment');
 
   // Load secrets
   await dotenv.load(fileName: '.env.$environment');
-  // print('📱 Banner ID: ${dotenv.env['ADMOB_BANNER_ID']}');
   AppLogger.debug('📱 Banner ID: ${dotenv.env['ADMOB_BANNER_ID']}');
 
   // Initialize AdMob
   await MobileAds.instance.initialize();
-  // print('✅ AdMob initialized');
   AppLogger.info('✅ AdMob initialized');
 
   // Run the app

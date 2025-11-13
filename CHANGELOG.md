@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Dice roller feature with D6 support
 - Clean, modern UI with orange theme
-- AdMob banner integration
+- Fast and responsive
+- Offline-friendly with graceful ad handling
+- Ad-supported (free to use)
 - Custom app icon
 - App renamed to "Random Kit"
 - Package name: com.nishanajihah.randomkit

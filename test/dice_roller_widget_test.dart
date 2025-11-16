@@ -23,7 +23,8 @@ void main() {
     await tester.pumpWidget(const RandomKitApp());
 
     // Wait for the UI to fully load and initialize (important for AdMob)
-    await tester.pumpAndSettle();
+    // await tester.pumpAndSettle();
+    await tester.pump();
 
     // Find the roll button and the result Text element using its Key
     final rollButton = find.text('ROLL DICE');

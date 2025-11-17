@@ -1,19 +1,27 @@
-import 'package:flutter/material.dart ';
+// lib/number_generator_screen.dart
+
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'utils/app_logger.dart';
-import 'package:random_kit_app/dice_logic.dart';
+import 'package:random_kit_app/number_generator_logic.dart';
 
-class DiceRollerScreen extends StatefulWidget {
-  const DiceRollerScreen({super.key});
+class NumberGeneratorScreen extends StatefulWidget {
+  const NumberGeneratorScreen({super.key});
 
   @override
-  State<DiceRollerScreen> createState() => _DiceRollerScreenState();
+  State<NumberGeneratorScreen> createState() => _NumberGeneratorScreenState();
 }
 
-class _DiceRollerScreenState extends State<DiceRollerScreen> {
-  int _currentRoll = 1;
+class _NumberGeneratorScreenState extends State<NumberGeneratorScreen> {
+  int _currentResult = 0;
+  final TextEditingController _minController = TextEditingController(text: '1');
+  final TextEditingController _maxController = TextEditingController(
+    text: '100',
+  );
+
+  // Decentralized Admob State & Logic (Copied/Modified from Dice Roller Screen)
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
 
@@ -31,6 +39,8 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
   @override
   void dispose() {
     // Always clean up resources
+    _minController.dispose();
+    _maxController.dispose();
     _bannerAd.dispose();
     super.dispose();
   }
@@ -38,7 +48,7 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
   void _loadBannerAd() {
     // Retrieve the banner ID safely from the loaded environment file
     final adUnitId =
-        dotenv.env['ADMOB_BANNER_ID'] ??
+        dotenv.env['ADMOB_BANNER_ID_GENERATOR'] ??
         'ca-app-pub-3940256099942544/6300978111';
 
     AppLogger.debug(
@@ -129,65 +139,80 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
     }
   }
 
-  void _rollDice() {
-    // Calls the core logic and updates the state (the number on the screen)
-    final newRoll = DiceLogic.rollD6();
-    // AppLogger.debug('🎲 Rolled: $newRoll');
+  void _generateNumber() {
+    final int min = int.tryParse(_minController.text) ?? 1;
+    final int max = int.tryParse(_maxController.text) ?? 100;
+    final newResult = NumberGeneratorLogic.generateNumber(min, max);
 
     setState(() {
-      _currentRoll = newRoll;
+      _currentResult = newResult;
     });
+  }
+
+  Widget _buildInputField(String label, TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // REMOVED: appBar - now provided by HomeScreen
+      // No AppBar here, it's provided by HomeScreen
       body: CustomScrollView(
-        // New modern layout structure
         slivers: <Widget>[
-          // 1. Main Content List
+          // 1. Main Content List - Everything that scrolls
           SliverPadding(
             padding: const EdgeInsets.all(16.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                const SizedBox(height: 50),
+                Row(
+                  children: [
+                    Expanded(child: _buildInputField('Min', _minController)),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildInputField('Max', _maxController)),
+                  ],
+                ),
+                const SizedBox(height: 40),
                 Text(
-                  '$_currentRoll',
-                  key: const Key('diceResultText'),
-                  style: TextStyle(
-                    fontSize: 120,
+                  '$_currentResult',
+                  style: const TextStyle(
+                    fontSize: 80,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                    color: Colors.teal,
                   ),
                 ),
                 const SizedBox(height: 50),
                 ElevatedButton(
-                  onPressed: _rollDice,
+                  onPressed: _generateNumber,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Colors.teal[800],
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 20,
+                      horizontal: 40,
+                      vertical: 15,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: const Text(
-                    'ROLL DICE',
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                    'GENERATE NUMBER',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 50),
-                const SizedBox(
-                  height: 80,
-                ), // Spacer for the Bottom Navigation Bar
+                // Spacer to ensure content scrolls above the ad and bottom navigation bar
+                const SizedBox(height: 80),
               ]),
             ),
           ),
 
-          // 2. Ad Banner Placement
+          // 2. Ad Banner Placement - fixed above the BottomNavigationBar
           SliverFillRemaining(
             hasScrollBody: false,
             child: Align(
@@ -203,47 +228,3 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
     );
   }
 }
-
-// appBar: AppBar(
-//         title: const Text('Dice Roller', style: TextStyle(color: Colors.white)),
-//         backgroundColor: Theme.of(context).primaryColor,
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             // The main display for the roll result,
-//             Text(
-//               '$_currentRoll',
-//               // Key for Widget Testing
-//               key: const Key('diceResultText'),
-//               style: TextStyle(
-//                 fontSize: 120,
-//                 fontWeight: FontWeight.bold,
-//                 color: Colors.orange,
-//               ),
-//             ),
-//             const SizedBox(height: 50),
-//             // The button to trigger the roll,
-//             ElevatedButton(
-//               onPressed: _rollDice,
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Theme.of(context).primaryColor,
-//                 padding: const EdgeInsets.symmetric(
-//                   horizontal: 50,
-//                   vertical: 20,
-//                 ),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(10),
-//                 ),
-//               ),
-//               child: const Text(
-//                 'ROLL DICE',
-//                 style: TextStyle(fontSize: 24, color: Colors.white),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//       // AdMob Banner at the bottom
-//       bottomNavigationBar: _buildAdBanner(),

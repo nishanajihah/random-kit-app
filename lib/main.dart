@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'utils/app_logger.dart';
-import 'dice_roller_screen.dart';
+import 'home_screen.dart';
+// import 'dice_roller_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,7 @@ class RandomKitApp extends StatelessWidget {
     return MaterialApp(
       title: 'Random Kit',
       theme: ThemeData(primaryColor: Colors.blue[900], useMaterial3: true),
-      home: const DiceRollerScreen(),
+      home: const HomeScreen(),
       // debugShowCheckedModeBanner: false,
     );
   }

@@ -54,3 +54,9 @@ android/key.properties
 *.jks
 *.keystore
 upload-keystore.jks
+
+# Ignore the entire 'example' directory
+example/
+
+# Ignore any files that end with the .example extension (e.g., .env.example)
+*.example

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // Note: The new screens we will create/modify
 import 'dice_roller_screen.dart';
 import 'number_generator_screen.dart';
+import 'coin_flipper_screen.dart';
 import 'widgets/ad_banner_widget.dart';
 
 // class HomeScreen extends StatefulWidget {
@@ -101,14 +102,21 @@ class HomeScreen extends StatelessWidget {
                             );
                           },
                         ),
-                        // Add more features here easily!
-                        // _buildFeatureCard(
-                        //   context: context,
-                        //   icon: Icons.shuffle,
-                        //   title: 'Coin Flip',
-                        //   color: Colors.amber,
-                        //   onTap: () {},
-                        // ),
+                        // Go to Coin Flipper
+                        _buildFeatureCard(
+                          context: context,
+                          icon: Icons.shuffle,
+                          title: 'Coin Flip',
+                          color: Colors.amber,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CoinFlipperScreen(),
+                              ),
+                            );
+                          },
+                        ),
                         // _buildFeatureCard(
                         //   context: context,
                         //   icon: Icons.style,

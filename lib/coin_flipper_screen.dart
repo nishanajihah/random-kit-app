@@ -31,7 +31,7 @@ class _CoinFlipperScreenState extends State<CoinFlipperScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Random Kit',
+              'Random Kit+ Idle',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withAlpha(204),

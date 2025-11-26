@@ -3,7 +3,7 @@
     <!-- Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="Random Kit"
+        android:label="Random Kit+ Idle"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

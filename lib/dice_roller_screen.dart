@@ -33,7 +33,7 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Random Kit',
+              'Random Kit+ Idle',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withAlpha(204),

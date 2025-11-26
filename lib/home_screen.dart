@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Random Kit',
+              'Random Kit+ Idle',
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
           ],

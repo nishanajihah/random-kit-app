@@ -57,7 +57,7 @@ class _NumberGeneratorScreenState extends State<NumberGeneratorScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Random Kit',
+              'Random Kit+ Idle',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withAlpha(204),

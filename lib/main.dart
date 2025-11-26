@@ -37,7 +37,7 @@ class RandomKitApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Random Kit',
+      title: 'Random Kit+ Idle',
       theme: ThemeData(primaryColor: Colors.blue[900], useMaterial3: true),
       home: const HomeScreen(),
       // debugShowCheckedModeBanner: false,

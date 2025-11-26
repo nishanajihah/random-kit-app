@@ -10,13 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
+- Color Mixer
+- Decision Wheel Spinner
+- Random Haptic Feedback Generator
 - Dark mode support
 - Multiple dice roller (2-6 dice)
 - Custom dice (D4, D8, D12, D20)
 
 ### In Progress
 
-- Coin flip feature
+- Coin flipper feature
 
 ### Fixed Unreleased
 

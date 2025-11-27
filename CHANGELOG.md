@@ -10,7 +10,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
-- Color Mixer
 - Decision Wheel Spinner
 - Random Haptic Feedback Generator
 - Dark mode support
@@ -19,11 +18,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### In Progress
 
-- Coin flipper feature
+- Color Mixer
 
 ### Fixed Unreleased
 
 - Nothing currently
+
+---
+
+## [1.2.0-alpha.1] - 2025-11-27
+
+### Added
+
+- Coin Flipper feature (Heads/Tails)
+
+### Changed
+
+- App name updated to "Random Kit+ Idle"
 
 ---
 

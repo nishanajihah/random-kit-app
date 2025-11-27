@@ -1,8 +1,8 @@
-# Random Kit App 🎲
+# Random Kit+ Idle App 🎲
 
 A Flutter app providing random utilities for everyday decisions.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.2.0--alpha.1-blue)
 ![Platform](https://img.shields.io/badge/platform-Android-green)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -10,12 +10,15 @@ A Flutter app providing random utilities for everyday decisions.
 
 - **Dice Roller** - Roll a standard 6-sided die
 - **Number Generator** - Generate random numbers with custom min/max range
+- **Coin Flipper** - Flip a coin for Heads or Tails
 - **Clean UI** - Modern hub-style navigation with feature cards
 - **Ad-Supported** - Free to use with non-intrusive banner ads
 
 ## 🚀 Coming Soon
 
-- Coin Flip
+- Color Mixer
+- Decision Wheel Spinner
+- Random Haptic Feedback Generator
 - Dark Mode
 - Multiple Dice (2-6 dice at once)
 - Custom Dice (D4, D8, D12, D20)
@@ -70,7 +73,7 @@ flutter run
 
 ## 📝 Version History
 
-**Current Version:** 1.1.0-alpha.1
+**Current Version:** 1.2.0-alpha.1
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 

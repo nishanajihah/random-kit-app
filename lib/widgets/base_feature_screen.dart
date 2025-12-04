@@ -10,12 +10,14 @@ class BaseFeatureScreen extends StatelessWidget {
   final String adUnitIdKey;
   final List<Widget> children;
   final EdgeInsets padding;
+  final Color? adBackgroundColor; // Optional background color for ad banner
 
   const BaseFeatureScreen({
     super.key,
     required this.adUnitIdKey,
     required this.children,
     this.padding = const EdgeInsets.all(16.0),
+    this.adBackgroundColor, // Default to theme color if null
   });
 
   @override
@@ -48,9 +50,14 @@ class BaseFeatureScreen extends StatelessWidget {
           right: 0,
           bottom: 0,
           child: Container(
-            color: Colors.white,
+            color: adBackgroundColor ?? Theme.of(context).primaryColor,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(
+                context,
+              ).padding.bottom, // Safe area padding
+            ),
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 5.0),
+              padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
               child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
             ),
           ),

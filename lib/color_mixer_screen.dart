@@ -51,8 +51,6 @@ class _ColorMixerScreenState extends State<ColorMixerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _currentColor,
-      extendBodyBehindAppBar: false,
-      extendBody: true, //
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

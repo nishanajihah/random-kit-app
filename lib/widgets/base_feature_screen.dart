@@ -22,45 +22,32 @@ class BaseFeatureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
         // Main Content
-        SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight:
-                  MediaQuery.of(context).size.height -
-                  kToolbarHeight -
-                  MediaQuery.of(context).padding.top -
-                  60, //Ad Banner space
-            ),
-            child: Padding(
-              padding: padding,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: children,
+        Expanded(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: padding,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: children,
+                ),
               ),
             ),
           ),
         ),
 
         // Fixed ad banner at bottom
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Container(
-            color: adBackgroundColor ?? Theme.of(context).primaryColor,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(
-                context,
-              ).padding.bottom, // Safe area padding
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-              child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
-            ),
+        Container(
+          width: double.infinity,
+          color: adBackgroundColor ?? Theme.of(context).primaryColor,
+          padding: EdgeInsets.only(
+            top: 8.0,
+            bottom: MediaQuery.of(context).padding.bottom + 8.0,
           ),
+          child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
         ),
       ],
     );

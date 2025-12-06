@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:flutter/services.dart';
 
 import 'utils/app_logger.dart';
 import 'home_screen.dart';
@@ -9,16 +8,6 @@ import 'home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Make the app draw edge-to-edge
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.transparent, // Makes nav bar transparent
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
-  // Edge to edge
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Determine which environment file to load
   const environment = String.fromEnvironment(
@@ -51,16 +40,7 @@ class RandomKitApp extends StatelessWidget {
       title: 'Random Kit+ Idle',
       theme: ThemeData(primaryColor: Colors.blue[900], useMaterial3: true),
       home: const HomeScreen(),
-
       // debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            padding: MediaQuery.of(context).padding.copyWith(bottom: 0),
-          ),
-          child: child!,
-        );
-      },
     );
   }
 }

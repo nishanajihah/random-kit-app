@@ -10,44 +10,50 @@ class BaseFeatureScreen extends StatelessWidget {
   final String adUnitIdKey;
   final List<Widget> children;
   final EdgeInsets padding;
-  final Color? adBackgroundColor; // Optional background color for ad banner
 
   const BaseFeatureScreen({
     super.key,
     required this.adUnitIdKey,
     required this.children,
     this.padding = const EdgeInsets.all(16.0),
-    this.adBackgroundColor, // Default to theme color if null
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         // Main Content
-        Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: padding,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: children,
-                ),
+        SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(context).size.height -
+                  kToolbarHeight -
+                  MediaQuery.of(context).padding.top -
+                  60, //Ad Banner space
+            ),
+            child: Padding(
+              padding: padding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: children,
               ),
             ),
           ),
         ),
 
         // Fixed ad banner at bottom
-        Container(
-          width: double.infinity,
-          color: adBackgroundColor ?? Theme.of(context).primaryColor,
-          padding: EdgeInsets.only(
-            top: 8.0,
-            bottom: MediaQuery.of(context).padding.bottom + 8.0,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
+            ),
           ),
-          child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
         ),
       ],
     );

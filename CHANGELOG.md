@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   
 ---  
 
-## [1.3.0-alpha.1] - 2025-12-8
+## [1.3.0-alpha.1] - 2025-12-7
 
 ### Added
 

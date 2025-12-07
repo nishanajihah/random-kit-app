@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'dice_roller_screen.dart';
 import 'number_generator_screen.dart';
 import 'coin_flipper_screen.dart';
+import 'color_mixer_screen.dart';
+
 import 'widgets/ad_banner_widget.dart';
 
 // class HomeScreen extends StatefulWidget {
@@ -117,13 +119,21 @@ class HomeScreen extends StatelessWidget {
                             );
                           },
                         ),
-                        // _buildFeatureCard(
-                        //   context: context,
-                        //   icon: Icons.style,
-                        //   title: 'Card Draw',
-                        //   color: Colors.red,
-                        //   onTap: () {},
-                        // ),
+                        // Go to Color Mixer
+                        _buildFeatureCard(
+                          context: context,
+                          icon: Icons.color_lens,
+                          title: 'Color\nMixer',
+                          color: Colors.red,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ColorMixerScreen(),
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ],

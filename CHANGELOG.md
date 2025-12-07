@@ -10,7 +10,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
-- Decision Wheel Spinner
 - Random Haptic Feedback Generator
 - Dark mode support
 - Multiple dice roller (2-6 dice)
@@ -18,11 +17,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### In Progress
 
-- Color Mixer
+- Decision Wheel Spinner
 
 ### Fixed Unreleased
 
 - Nothing currently
+  
+---  
+
+## [1.3.0-alpha.1] - 2025-12-8
+
+### Added
+
+- Color Mixer feature
+
+### Changed
+
+- Change ad banner design and bottom layout
 
 ---
 

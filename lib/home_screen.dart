@@ -7,15 +7,9 @@ import 'dice_roller_screen.dart';
 import 'number_generator_screen.dart';
 import 'coin_flipper_screen.dart';
 import 'color_mixer_screen.dart';
+import 'wheel_spinner_screen.dart';
 
 import 'widgets/ad_banner_widget.dart';
-
-// class HomeScreen extends StatefulWidget {
-//   const HomeScreen({super.key});
-
-//   @override
-//   State<HomeScreen> createState() => _HomeScreenState();
-// }
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -23,149 +17,178 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Dynamic AppBar that changes based on selected screen
       appBar: AppBar(
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Random Kit+ Idle',
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
           ],
         ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 1,
-      ),
-
-      body: Column(
-        children: [
-          // Main Content area
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // App Logo or Title
-                    Icon(
-                      Icons.casino,
-                      size: 80,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Choose Your Tool',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    const SizedBox(height: 48),
-
-                    // Feature Button Grid
-                    GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.1,
-                      children: [
-                        // Go to Dice Roller
-                        _buildFeatureCard(
-                          context: context,
-                          icon: Icons.casino,
-                          title: 'Dice Roller',
-                          color: Colors.orange,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DiceRollerScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        //  Go to Number Generator
-                        _buildFeatureCard(
-                          context: context,
-                          icon: Icons.numbers,
-                          title: 'Number\nGenerator',
-                          color: Colors.teal,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const NumberGeneratorScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        // Go to Coin Flipper
-                        _buildFeatureCard(
-                          context: context,
-                          icon: Icons.shuffle,
-                          title: 'Coin Flip',
-                          color: Colors.amber,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CoinFlipperScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        // Go to Color Mixer
-                        _buildFeatureCard(
-                          context: context,
-                          icon: Icons.color_lens,
-                          title: 'Color\nMixer',
-                          color: Colors.red,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ColorMixerScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Text(
+                'Choose Your Tool',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withAlpha(230),
                 ),
               ),
             ),
           ),
-          // Ad Banner at bottom
-          const Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
-            child: AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+        ],
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 1,
+      ),
+      body: Column(
+        children: [
+          // Main Content area with vertical scrolling
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                // 1. Dice Roller - Icon on LEFT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.casino,
+                  title: 'Dice Roller',
+                  color: Colors.orange,
+                  isIconOnLeft: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DiceRollerScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 2. Number Generator - Icon on RIGHT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.numbers,
+                  title: 'Number Generator',
+                  color: Colors.teal,
+                  isIconOnLeft: false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NumberGeneratorScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 3. Coin Flipper - Icon on LEFT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.shuffle,
+                  title: 'Coin Flip',
+                  color: Colors.amber,
+                  isIconOnLeft: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CoinFlipperScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 4. Color Mixer - Icon on RIGHT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.color_lens,
+                  title: 'Color Mixer',
+                  color: Colors.red,
+                  isIconOnLeft: false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ColorMixerScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 5. Wheel Spinner - Icon on LEFT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.track_changes,
+                  title: 'Wheel Spinner',
+                  color: Colors.purple,
+                  isIconOnLeft: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WheelSpinnerScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 6. Coming Soon - Icon on RIGHT
+                _buildFeatureButton(
+                  context: context,
+                  icon: Icons.casino_outlined,
+                  title: 'Coming Soon',
+                  color: Colors.grey,
+                  isIconOnLeft: false,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('More features coming soon!'),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Ad Banner at bottom with SafeArea
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureCard({
+  Widget _buildFeatureButton({
     required BuildContext context,
     required IconData icon,
     required String title,
     required Color color,
+    required bool isIconOnLeft,
     required VoidCallback onTap,
   }) {
     return Card(
-      elevation: 4,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          height: 80,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             gradient: LinearGradient(
@@ -174,21 +197,43 @@ class HomeScreen extends StatelessWidget {
               colors: [color.withAlpha(178), color.withAlpha(153)],
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 48, color: Colors.white),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: isIconOnLeft
+                  ? [
+                      // Icon on LEFT
+                      Icon(icon, size: 48, color: Colors.white),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ]
+                  : [
+                      // Text on LEFT, Icon on RIGHT
+                      Expanded(
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(icon, size: 48, color: Colors.white),
+                    ],
+            ),
           ),
         ),
       ),

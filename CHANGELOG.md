@@ -17,15 +17,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### In Progress
 
-- Decision Wheel Spinner
+- Random Haptic Feedback Generator
 
 ### Fixed Unreleased
 
 - Nothing currently
+
+---
+
+[1.4.0-alpha.1] - 2025-12-17
+
+### Added
+
+Wheel Spinner feature - Decision-making wheel with customizable options
+
+- Animated spinning wheel with smooth animations
+- Add/edit/delete options with intuitive dialog interface
+- Minimum 2 options, maximum 10 options
+- Color-coded wheel segments for better visibility
+- Real-time winner display after spin completes
+- Numbered list view for easy option management
+- Warning dialog for insufficient options
+
+### Changed
+
+- Home screen redesigned with vertical scrolling layout
+- Feature buttons now use zigzag pattern (alternating left/right icon placement)
+- Improved UI consistency across all feature screens
+
+### Fixed
+
+- Bottom overflow issue on all screens with edge-to-edge display
+- Ad banner positioning with SafeArea implementation
+- Stream listener errors in FortuneWheel widget
   
 ---  
 
-## [1.3.0-alpha.1] - 2025-12-8
+## [1.3.0-alpha.1] - 2025-12-7
 
 ### Added
 

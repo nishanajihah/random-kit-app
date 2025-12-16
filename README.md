@@ -2,9 +2,9 @@
 
 A Flutter app providing random utilities for everyday decisions and idle fun.
 
-![Version](https://img.shields.io/badge/version-1.3.0--alpha.1-blue)
-![Platform](https://img.shields.io/badge/platform-Android-green)
-![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.4.0--alpha.1-blue?style=for-the-badge)
+![Platform](https://img.shields.io/badge/platform-android-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/license-mit-orange?style=for-the-badge)
 
 ## Features
 
@@ -12,12 +12,12 @@ A Flutter app providing random utilities for everyday decisions and idle fun.
 - **Number Generator** - Generate random numbers with custom min/max range
 - **Coin Flipper** - Flip a coin for Heads or Tails
 - **Color Mixer** - Generate a random color code
+- **Wheel Spinner** - Decision Wheel Spinner
 - **Clean UI** - Modern hub-style navigation with feature cards
 - **Ad-Supported** - Free to use with non-intrusive banner ads
 
 ## 🚀 Coming Soon
 
-- Decision Wheel Spinner
 - Random Haptic Feedback Generator
 - Dark Mode
 - Multiple Dice (2-6 dice at once)

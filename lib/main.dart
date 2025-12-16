@@ -53,14 +53,6 @@ class RandomKitApp extends StatelessWidget {
       home: const HomeScreen(),
 
       // debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            padding: MediaQuery.of(context).padding.copyWith(bottom: 0),
-          ),
-          child: child!,
-        );
-      },
     );
   }
 }

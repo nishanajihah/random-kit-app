@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 
+import 'utils/app_logger.dart';
 import 'wheel_spinner_logic.dart';
 import 'widgets/base_feature_screen.dart';
 
@@ -18,11 +19,13 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
   // Default options
   List<String> _options = ['Pizza', 'Burger', 'Sushi', 'Tacos'];
 
-  // Stream controller for wheel animation
-  final StreamController<int> _wheelController = StreamController<int>();
+  // Stream controller for wheel animation - BROADCAST to allow multiple listeners
+  final StreamController<int> _wheelController =
+      StreamController<int>.broadcast();
 
-  // Track the winning option
+  // Track the winning option and index
   String? _winner;
+  int? _winningIndex;
   bool _isSpinning = false;
 
   @override
@@ -39,102 +42,235 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
       return;
     }
 
-    // Select random winner
+    // Select random winner ONCE
     final winningIndex = WheelSpinnerLogic.selectRandomIndex(_options);
+
+    AppLogger.debug('Selected winning index: $winningIndex');
+    AppLogger.debug('Winner will be: ${_options[winningIndex]}');
 
     setState(() {
       _isSpinning = true;
-      _winner = null; // Clear previous winner
+      _winner = null;
+      _winningIndex = winningIndex;
     });
 
-    // Trigger wheel animation
+    // Trigger wheel animation to this specific index
     _wheelController.add(winningIndex);
-  }
 
-  void _onSpinComplete(int winningIndex) {
-    // Delay slightly to show the wheel has stopped
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) {
-        setState(() {
-          _winner = _options[winningIndex];
-          _isSpinning = false;
-        });
+    // FALLBACK: In case onAnimationEnd doesn't fire
+    Future.delayed(const Duration(seconds: 6), () {
+      if (_isSpinning && mounted) {
+        AppLogger.debug('Fallback triggered - showing winner');
+        _onSpinComplete();
       }
     });
   }
 
+  void _onSpinComplete() {
+    AppLogger.debug('onSpinComplete called');
+    AppLogger.debug('Winning index: $_winningIndex');
+
+    if (_winningIndex != null && mounted) {
+      setState(() {
+        _winner = _options[_winningIndex!];
+        _isSpinning = false;
+        AppLogger.debug('Winner displayed: $_winner');
+      });
+    }
+  }
+
   void _showEditDialog() {
-    final controller = TextEditingController(text: _options.join('\n'));
+    // Create a temporary copy to work with
+    List<String> tempOptions = List.from(_options);
+    final addController = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Edit Options (Max ${WheelSpinnerLogic.maxOptions})',
-          style: const TextStyle(fontSize: 18),
-        ),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Current: ${_options.length}/${WheelSpinnerLogic.maxOptions}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: controller,
-                maxLines: 10,
-                autofocus: true,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                decoration: const InputDecoration(
-                  hintText:
-                      'Enter one option per line\n\nExample:\nPizza\nBurger\nSushi\nTacos',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Edit Options', style: const TextStyle(fontSize: 18)),
+                Text(
+                  '${tempOptions.length}/${WheelSpinnerLogic.maxOptions}',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
+              ],
+            ),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 400,
+              child: Column(
+                children: [
+                  // Add new option input
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: addController,
+                          decoration: const InputDecoration(
+                            hintText: 'Add new option...',
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                          ),
+                          onSubmitted: (value) {
+                            if (value.trim().isNotEmpty &&
+                                tempOptions.length <
+                                    WheelSpinnerLogic.maxOptions) {
+                              setDialogState(() {
+                                tempOptions.add(value.trim());
+                                addController.clear();
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () {
+                          if (addController.text.trim().isNotEmpty &&
+                              tempOptions.length <
+                                  WheelSpinnerLogic.maxOptions) {
+                            setDialogState(() {
+                              tempOptions.add(addController.text.trim());
+                              addController.clear();
+                            });
+                          } else if (tempOptions.length >=
+                              WheelSpinnerLogic.maxOptions) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Maximum ${WheelSpinnerLogic.maxOptions} options!',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.add_circle),
+                        color: Theme.of(context).primaryColor,
+                        iconSize: 32,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  // List of current options
+                  Expanded(
+                    child: tempOptions.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No options yet.\nAdd at least 2 to continue.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: tempOptions.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).primaryColor,
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    tempOptions[index],
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      setDialogState(() {
+                                        tempOptions.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('CANCEL'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (!WheelSpinnerLogic.hasMinimumOptions(tempOptions)) {
+                    // Show dialog instead of snackbar
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.orange,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('Not Enough Options'),
+                          ],
+                        ),
+                        content: Text(
+                          'You need at least ${WheelSpinnerLogic.minOptions} options to spin the wheel.\n\nPlease add ${WheelSpinnerLogic.minOptions - tempOptions.length} more option(s).',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+
+                  setState(() {
+                    _options = tempOptions;
+                    _winner = null;
+                    _winningIndex = null;
+                  });
+
+                  Navigator.of(dialogContext).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('SAVE'),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () {
-              final newOptions = WheelSpinnerLogic.parseOptions(
-                controller.text,
-              );
-
-              if (!WheelSpinnerLogic.hasMinimumOptions(newOptions)) {
-                _showMessage(
-                  'Need at least ${WheelSpinnerLogic.minOptions} options!',
-                );
-                return;
-              }
-
-              if (!WheelSpinnerLogic.isWithinMaxOptions(newOptions)) {
-                _showMessage(
-                  'Maximum ${WheelSpinnerLogic.maxOptions} options allowed!',
-                );
-                return;
-              }
-
-              setState(() {
-                _options = newOptions;
-                _winner = null;
-              });
-
-              Navigator.pop(context);
-            },
-            child: const Text('SAVE'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -146,18 +282,18 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
   }
 
   List<FortuneItem> _buildWheelItems() {
-    // Use darker colors that won't clash with red arrow
+    // Use darker, vibrant colors that contrast well with red arrow
     final colors = [
-      const Color(0xFF1976D2), // Dark Blue
-      const Color(0xFF388E3C), // Dark Green
-      const Color(0xFFE64A19), // Dark Orange
-      const Color(0xFF7B1FA2), // Dark Purple
-      const Color(0xFF00796B), // Dark Teal
-      const Color(0xFFC2185B), // Dark Pink
-      const Color(0xFF303F9F), // Dark Indigo
-      const Color(0xFFF57C00), // Dark Amber
-      const Color(0xFF0097A7), // Dark Cyan
-      const Color(0xFF5D4037), // Brown
+      const Color(0xFF1565C0), // Deep Blue
+      const Color(0xFF2E7D32), // Forest Green
+      const Color(0xFFD84315), // Deep Orange
+      const Color(0xFF6A1B9A), // Deep Purple
+      const Color(0xFF00695C), // Teal
+      const Color(0xFFC2185B), // Pink
+      const Color(0xFF283593), // Indigo
+      const Color(0xFFEF6C00), // Orange
+      const Color(0xFF00838F), // Cyan
+      const Color(0xFF4E342E), // Brown
     ];
 
     return _options.asMap().entries.map((entry) {
@@ -221,6 +357,9 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
           SizedBox(
             height: 300,
             child: FortuneWheel(
+              key: ValueKey(
+                '${_options.length}-${_options.join(',')}',
+              ), // Force rebuild when options change
               selected: _wheelController.stream,
               items: _buildWheelItems(),
               animateFirst: false,
@@ -228,26 +367,13 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
                 FortuneIndicator(
                   alignment: Alignment.topCenter,
                   child: TriangleIndicator(
-                    color: Color(0xFFD32F2F), // Solid dark red
+                    color: Color(0xFFFF1744), // Bright red for visibility
                     width: 28,
                     height: 28,
                   ),
                 ),
               ],
-              onAnimationEnd: () {
-                // Get the winning index from the last value sent to the stream
-                // We need to track this separately
-                if (mounted) {
-                  Future.delayed(const Duration(milliseconds: 100), () {
-                    if (_isSpinning && mounted) {
-                      final winningIndex = WheelSpinnerLogic.selectRandomIndex(
-                        _options,
-                      );
-                      _onSpinComplete(winningIndex);
-                    }
-                  });
-                }
-              },
+              onAnimationEnd: _onSpinComplete,
             ),
           ),
           const SizedBox(height: 20),
@@ -260,7 +386,7 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
                   ? LinearGradient(
                       colors: [
                         Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColor.withAlpha(178),
+                        Theme.of(context).primaryColor.withAlpha(200),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -281,7 +407,7 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
             ),
             child: Center(
               child: _isSpinning
-                  ? Row(
+                  ? const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
@@ -292,8 +418,8 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        const Text(
+                        SizedBox(width: 12),
+                        Text(
                           'SPINNING...',
                           style: TextStyle(
                             fontSize: 18,
@@ -333,7 +459,7 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
           ),
           const SizedBox(height: 20),
 
-          // Action buttons - same height
+          // Action buttons
           Row(
             children: [
               Expanded(

@@ -160,10 +160,13 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Ad Banner at bottom
-          const Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
-            child: AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+          // Ad Banner at bottom with SafeArea
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+            ),
           ),
         ],
       ),

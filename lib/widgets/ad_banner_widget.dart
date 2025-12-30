@@ -94,23 +94,36 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isAdLoaded) {
-      return SizedBox(
-        height: _bannerAd.size.height.toDouble(),
-        width: _bannerAd.size.width.toDouble(),
-        child: AdWidget(ad: _bannerAd),
+      // Center the ad banner - responsive to screen width
+      return Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+          ),
+          child: SizedBox(
+            height: _bannerAd.size.height.toDouble(),
+            width: _bannerAd.size.width.toDouble(),
+            child: AdWidget(ad: _bannerAd),
+          ),
+        ),
       );
     } else if (_adFailedToLoad) {
       return Container(
         height: 50,
+        width: double.infinity,
         color: Colors.grey[200],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.wifi_off, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 8),
-            Text(
-              'Ad unavailable - Check internet connection',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            Flexible(
+              child: Text(
+                'Ad unavailable - Check internet connection',
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -118,6 +131,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     } else {
       return Container(
         height: 50,
+        width: double.infinity,
         color: Colors.grey[100],
         child: const Center(
           child: SizedBox(

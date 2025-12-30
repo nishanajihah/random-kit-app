@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'utils/app_logger.dart';
 import 'home_screen.dart';
+import 'network_gate_screen.dart';
 // import 'dice_roller_screen.dart';
 
 Future<void> main() async {
@@ -49,9 +50,8 @@ class RandomKitApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Random Kit+ Idle',
-      theme: ThemeData(primaryColor: Colors.blue[900], useMaterial3: true),
-      home: const HomeScreen(),
-
+      theme: ThemeData(primaryColor: Colors.orange, useMaterial3: true),
+      home: const NetworkGateScreen(child: HomeScreen()),
       // debugShowCheckedModeBanner: false,
     );
   }

@@ -96,9 +96,8 @@ Contributions, issues, and feature requests are welcome!
 Feel free to check [issues page](https://github.com/nishanajihah/random-kit-app/issues).
 
 ## ⭐ Show Your Support
+Give a ⭐️ if you like this project
 
-Give a ⭐️ if you like this project!
-
----
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q71FN62M)
 
 Made with ❤️ using Flutter

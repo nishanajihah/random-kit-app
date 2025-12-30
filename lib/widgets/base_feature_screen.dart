@@ -39,14 +39,22 @@ class BaseFeatureScreen extends StatelessWidget {
           ),
         ),
 
-        // Fixed ad banner at bottom with SafeArea
-        SafeArea(
-          top: false,
-          child: Container(
-            width: double.infinity,
-            color: adBackgroundColor ?? Theme.of(context).primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: AdBannerWidget(adUnitIdKey: adUnitIdKey),
+        // Fixed ad banner at bottom - responsive for all devices
+        Container(
+          width: double.infinity,
+          color: adBackgroundColor ?? Theme.of(context).primaryColor,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              AdBannerWidget(adUnitIdKey: adUnitIdKey),
+              // Bottom padding adapts to device (gesture bar, buttons, etc)
+              SizedBox(
+                height: MediaQuery.of(context).viewPadding.bottom > 0
+                    ? MediaQuery.of(context).viewPadding.bottom + 8.0
+                    : 8.0,
+              ),
+            ],
           ),
         ),
       ],

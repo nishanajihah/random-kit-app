@@ -160,12 +160,21 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Ad Banner at bottom with SafeArea
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+          // Ad Banner at bottom - blue background extends to edge
+          Container(
+            width: double.infinity,
+            color: Theme.of(context).primaryColor,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID'),
+                SizedBox(
+                  height: MediaQuery.of(context).viewPadding.bottom > 0
+                      ? MediaQuery.of(context).viewPadding.bottom + 8.0
+                      : 8.0,
+                ),
+              ],
             ),
           ),
         ],

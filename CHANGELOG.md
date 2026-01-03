@@ -10,18 +10,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
-- Random Haptic Feedback Generator
+- Settings
 - Dark mode support
-- Multiple dice roller (2-6 dice)
-- Custom dice (D4, D8, D12, D20)
+- Enhance Dice Feature
+- Enhance Number Generator
+- Enhance Coin Flip
+- Enhance Color Mixer
+- Enhance Wheel Spineer
+- Enhance Haptic Generator
+- Multiple Dice (2-6 dice at once)
+- Custom Dice (D4, D8, D12, D20)
 
 ### In Progress
 
-- Random Haptic Feedback Generator
+- Settings and Enhance Home Screen
 
 ### Fixed Unreleased
 
 - Nothing currently
+
+---
+
+## [1.5.0-alpha.1] - 2026-01-04
+
+### Added
+
+- **Random Haptic Feedback Generator** - Feel the randomness!
+  - 9 unique vibration patterns: Heartbeat, Pulse, Taps, Rumble, Buzz, The Zap, Machine Gun, Slow Pulse, and Morse SOS.
+  - Randomized pattern selection logic for variety.
+  - Comprehensive Unit Tests for the Haptic Logic and pattern integrity.
+- Category metadata: Defined app as "Entertainment" in Android Manifest.
+
+### Changed
+
+- Updated versioning logic to move out of the 1.4.x alpha branch.
+- Optimized internal randomizer efficiency for pattern selection.
 
 ---
 

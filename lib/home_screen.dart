@@ -8,6 +8,7 @@ import 'number_generator_screen.dart';
 import 'coin_flipper_screen.dart';
 import 'color_mixer_screen.dart';
 import 'wheel_spinner_screen.dart';
+import 'haptic_generator_screen.dart';
 
 import 'widgets/ad_banner_widget.dart';
 
@@ -142,17 +143,18 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // 6. Coming Soon - Icon on RIGHT
+                // 6. Haptic Generator - Icon on RIGHT
                 _buildFeatureButton(
                   context: context,
-                  icon: Icons.casino_outlined,
-                  title: 'Coming Soon',
-                  color: Colors.grey,
-                  isIconOnLeft: false,
+                  icon: Icons.vibration,
+                  title: 'Haptic Generator',
+                  color: Colors.indigo,
+                  isIconOnLeft: false, // RIGHT to follow zigzag pattern
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('More features coming soon!'),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HapticGeneratorScreen(),
                       ),
                     );
                   },

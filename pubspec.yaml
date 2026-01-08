@@ -1,5 +1,5 @@
 name: random_kit_app
-description: "Your all-in-one digital tool for fair, fast, and completely randomize outcomes"
+description: "Random Kit+ Idle: Your Ultimate Random Utility Toolbox"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -42,6 +42,8 @@ dependencies:
   flutter_fortune_wheel: ^1.3.2
   connectivity_plus: ^7.0.0
   vibration: ^3.1.5
+  url_launcher: ^6.3.2
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

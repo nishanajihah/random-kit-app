@@ -329,26 +329,11 @@ class _WheelSpinnerScreenState extends State<WheelSpinnerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Random Kit+ Idle',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            Text(
-              'Wheel Spinner',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: BaseFeatureScreen(
+        showHeader: true,
+        headerTitle: 'Random Kit+ Idle',
+        headerSubtitle: 'Wheel Spinner',
+        onBackPressed: () => Navigator.of(context).pop(),
         adUnitIdKey: 'ADMOB_BANNER_ID_WHEEL',
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         adBackgroundColor: Theme.of(context).primaryColor,

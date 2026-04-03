@@ -27,29 +27,11 @@ class _DiceRollerScreenState extends State<DiceRollerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Random Kit+ Idle',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withAlpha(204),
-              ),
-            ),
-            const Text(
-              'Dice Roller',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: BaseFeatureScreen(
+        showHeader: true,
+        headerTitle: 'Random Kit+ Idle',
+        headerSubtitle: 'Dice Roller',
+        onBackPressed: () => Navigator.of(context).pop(),
         adUnitIdKey: 'ADMOB_BANNER_ID_DICE',
         children: [
           const SizedBox(height: 50),

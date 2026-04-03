@@ -51,29 +51,11 @@ class _ColorMixerScreenState extends State<ColorMixerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _currentColor,
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Random Kit+ Idle',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withAlpha(204),
-              ),
-            ),
-            const Text(
-              'Color Mixer',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: BaseFeatureScreen(
+        showHeader: true,
+        headerTitle: 'Random Kit+ Idle',
+        headerSubtitle: 'Color Mixer',
+        onBackPressed: () => Navigator.of(context).pop(),
         adUnitIdKey: 'ADMOB_BANNER_ID_COLOR',
         padding: EdgeInsets.zero,
         adBackgroundColor: Theme.of(context).primaryColor,

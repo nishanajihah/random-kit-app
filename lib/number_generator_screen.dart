@@ -51,29 +51,11 @@ class _NumberGeneratorScreenState extends State<NumberGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Random Kit+ Idle',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withAlpha(204),
-              ),
-            ),
-            const Text(
-              'Number Generator',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: BaseFeatureScreen(
+        showHeader: true,
+        headerTitle: 'Random Kit+ Idle',
+        headerSubtitle: 'Number Generator',
+        onBackPressed: () => Navigator.of(context).pop(),
         adUnitIdKey: 'ADMOB_BANNER_ID_GENERATOR', // Number generator ad ID
         children: [
           Row(

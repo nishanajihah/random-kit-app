@@ -127,26 +127,11 @@ class _HapticGeneratorScreenState extends State<HapticGeneratorScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Random Kit+ Idle',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            Text(
-              'Haptic Generator',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: BaseFeatureScreen(
+        showHeader: true,
+        headerTitle: 'Random Kit+ Idle',
+        headerSubtitle: 'Haptic Generator',
+        onBackPressed: () => Navigator.of(context).pop(),
         adUnitIdKey: 'ADMOB_BANNER_ID_HAPTIC',
         children: [
           const SizedBox(height: 20),

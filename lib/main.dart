@@ -4,8 +4,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/services.dart';
 
 import 'utils/app_logger.dart';
-import 'home_screen.dart';
-import 'network_gate_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/network_gate_screen.dart';
+import 'services/device_capability_service.dart';
 // import 'dice_roller_screen.dart';
 
 Future<void> main() async {
@@ -38,6 +39,9 @@ Future<void> main() async {
   // Initialize AdMob
   await MobileAds.instance.initialize();
   AppLogger.info('✅ AdMob initialized');
+
+  // Perform Device Hardware Capability Scan
+  await DeviceCapabilityService().scanCapabilities();
 
   // Run the app
   runApp(const RandomKitApp());

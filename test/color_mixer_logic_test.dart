@@ -3,7 +3,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:random_kit_app/color_mixer_logic.dart';
+import 'package:random_kit_app/logics/color_mixer_logic.dart';
 
 void main() {
   group('ColorMixerLogic', () {

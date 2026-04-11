@@ -1,9 +1,9 @@
-// lib/color_mixer_screen.dart
+// lib/screens/color_mixer_screen.dart
 
 import 'package:flutter/material.dart';
 
-import 'color_mixer_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../logics/color_mixer_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class ColorMixerScreen extends StatefulWidget {
   const ColorMixerScreen({super.key});

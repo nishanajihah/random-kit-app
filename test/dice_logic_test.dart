@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:random_kit_app/dice_logic.dart';
+import 'package:random_kit_app/logics/dice_logic.dart';
 
 void main() {
   group('DiceLogic', () {

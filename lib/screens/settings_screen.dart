@@ -1,4 +1,4 @@
-// lib/settings_screen.dart
+// lib/screens/settings_screen.dart
 
 import 'dart:ui';
 

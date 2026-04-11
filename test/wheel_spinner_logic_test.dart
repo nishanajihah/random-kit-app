@@ -1,7 +1,7 @@
 // test/decision_wheel_logic_test.dart
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:random_kit_app/wheel_spinner_logic.dart';
+import 'package:random_kit_app/logics/wheel_spinner_logic.dart';
 
 void main() {
   group('WheelSpinnerLogic', () {

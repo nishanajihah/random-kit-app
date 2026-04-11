@@ -1,4 +1,4 @@
-// lib/color_mixer_logic.dart
+// lib/logics/color_mixer_logic.dart
 
 import 'dart:math';
 import 'dart:ui';

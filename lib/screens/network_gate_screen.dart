@@ -1,10 +1,10 @@
-// lib/network_gate_screen.dart
+// lib/screens/network_gate_screen.dart
 
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'utils/app_logger.dart';
+import '../utils/app_logger.dart';
 
 class NetworkGateScreen extends StatefulWidget {
   final Widget child;

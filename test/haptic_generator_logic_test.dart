@@ -1,7 +1,7 @@
 // lib/haptic_generator_logic_test.dart
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:random_kit_app/haptic_generator_logic.dart';
+import 'package:random_kit_app/logics/haptic_generator_logic.dart';
 
 void main() {
   group('HapticGeneratorLogic Tests', () {

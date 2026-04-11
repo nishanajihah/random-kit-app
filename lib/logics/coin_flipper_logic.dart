@@ -1,4 +1,4 @@
-// lib/coin_flipper_logic.dart
+// lib/logics/coin_flipper_logic.dart
 
 import 'dart:math';
 

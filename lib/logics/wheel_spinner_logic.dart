@@ -1,4 +1,4 @@
-// lib/wheel_spinner_logic.dart
+// lib/logics/wheel_spinner_logic.dart
 
 import 'dart:math';
 

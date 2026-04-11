@@ -1,4 +1,4 @@
-// lib/haptic_generator_logic.dart
+// lib/logics/haptic_generator_logic.dart
 
 import 'dart:math';
 

@@ -1,3 +1,5 @@
+// lib/logics/dice_logic.dart
+
 import 'dart:math';
 
 class DiceLogic {

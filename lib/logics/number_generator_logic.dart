@@ -1,4 +1,4 @@
-// lib/number_generator_logic.dart
+// lib/logics/number_generator_logic.dart
 
 import 'dart:math';
 

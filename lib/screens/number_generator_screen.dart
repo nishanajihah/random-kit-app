@@ -1,10 +1,10 @@
-// lib/number_generator_screen.dart
+// lib/screens/number_generator_screen.dart
 
 import 'package:flutter/material.dart';
 
 // import 'utils/app_logger.dart';
-import 'number_generator_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../logics/number_generator_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class NumberGeneratorScreen extends StatefulWidget {
   const NumberGeneratorScreen({super.key});

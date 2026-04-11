@@ -1,7 +1,7 @@
 // test/coin_flipper_logic_test.dart
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:random_kit_app/coin_flipper_logic.dart';
+import 'package:random_kit_app/logics/coin_flipper_logic.dart';
 
 void main() {
   group('CoinFlipperLogic', () {

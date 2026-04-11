@@ -1,9 +1,9 @@
-// lib/coin_flipper_screen.dart
+// lib/screens/coin_flipper_screen.dart
 
 import 'package:flutter/material.dart';
 
-import 'coin_flipper_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../logics/coin_flipper_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class CoinFlipperScreen extends StatefulWidget {
   const CoinFlipperScreen({super.key});

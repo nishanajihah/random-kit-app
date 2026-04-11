@@ -1,11 +1,11 @@
-// lib/haptic_generator_screen.dart
+// lib/screens/haptic_generator_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 
-import 'haptic_generator_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../logics/haptic_generator_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class HapticGeneratorScreen extends StatefulWidget {
   const HapticGeneratorScreen({super.key});

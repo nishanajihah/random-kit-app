@@ -1,12 +1,12 @@
-// lib/wheel_spinner_screen.dart
+// lib/screens/wheel_spinner_screen.dart
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 
-import 'utils/app_logger.dart';
-import 'wheel_spinner_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../utils/app_logger.dart';
+import '../logics/wheel_spinner_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class WheelSpinnerScreen extends StatefulWidget {
   const WheelSpinnerScreen({super.key});

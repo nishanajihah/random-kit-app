@@ -1,4 +1,4 @@
-// lib/home_screen.dart
+// lib/screens/home_screen.dart
 
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ import 'wheel_spinner_screen.dart';
 import 'haptic_generator_screen.dart';
 import 'settings_screen.dart';
 
-import 'widgets/ad_banner_widget.dart';
+import '../widgets/ad_banner_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

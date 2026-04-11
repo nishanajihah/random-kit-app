@@ -1,8 +1,10 @@
+// lib/screens/dice_roller_screen.dart
+
 import 'package:flutter/material.dart ';
 
 // import 'utils/app_logger.dart';
-import 'dice_logic.dart';
-import 'widgets/base_feature_screen.dart';
+import '../logics/dice_logic.dart';
+import '../widgets/base_feature_screen.dart';
 
 class DiceRollerScreen extends StatefulWidget {
   const DiceRollerScreen({super.key});

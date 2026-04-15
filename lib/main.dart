@@ -4,7 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/services.dart';
 
 import 'utils/app_logger.dart';
-import 'screens/home_screen.dart';
+import 'home_screen.dart';
 import 'screens/network_gate_screen.dart';
 import 'services/device_capability_service.dart';
 // import 'dice_roller_screen.dart';

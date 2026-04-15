@@ -3,15 +3,16 @@
 import 'package:flutter/material.dart';
 
 // Note: The new screens we will create/modify
-import 'dice_roller_screen.dart';
-import 'number_generator_screen.dart';
-import 'coin_flipper_screen.dart';
-import 'color_mixer_screen.dart';
-import 'wheel_spinner_screen.dart';
-import 'haptic_generator_screen.dart';
-import 'settings_screen.dart';
+import 'screens/dice_roller_screen.dart';
+import 'screens/number_generator_screen.dart';
+import 'screens/coin_flipper_screen.dart';
+import 'screens/color_mixer_screen.dart';
+import 'screens/wheel_spinner_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/haptic_memory_game_screen.dart';
+import 'screens/visual_memory_game_screen.dart';
 
-import '../widgets/ad_banner_widget.dart';
+import 'widgets/ad_banner_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -53,6 +54,38 @@ class HomeScreen extends StatelessWidget {
                         ),
                         children: [
                           // Modern feature cards
+                          _buildModernFeatureCard(
+                            context: context,
+                            icon: Icons.memory,
+                            title: 'Color Game',
+                            subtitle: 'Roll the dice',
+                            color: Colors.blue,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const VisualMemoryGameScreen(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          _buildModernFeatureCard(
+                            context: context,
+                            icon: Icons.vibration,
+                            title: 'Haptic Game',
+                            subtitle: 'Feel the buzz',
+                            color: Colors.indigo,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const HapticMemoryGameScreen(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
                           _buildModernFeatureCard(
                             context: context,
                             icon: Icons.casino,
@@ -128,22 +161,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
-
-                          _buildModernFeatureCard(
-                            context: context,
-                            icon: Icons.vibration,
-                            title: 'Haptic Generator',
-                            subtitle: 'Feel the buzz',
-                            color: Colors.indigo,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const HapticGeneratorScreen(),
-                              ),
-                            ),
-                          ),
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -169,20 +186,23 @@ class HomeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.9),
-            Colors.white.withOpacity(0.7),
+            Colors.white.withValues(alpha: 0.9),
+            Colors.white.withValues(alpha: 0.7),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.2),
+            color: Colors.orange.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -206,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.orange.withOpacity(0.3),
+                            color: Colors.orange.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -259,12 +279,12 @@ class HomeScreen extends StatelessWidget {
                 ),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.orange.withOpacity(0.3),
+                  color: Colors.orange.withValues(alpha: 0.3),
                   width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: Colors.orange.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -387,16 +407,16 @@ class HomeScreen extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.orange.shade100.withOpacity(0.5),
+            Colors.orange.shade100.withValues(alpha: 0.5),
             Colors.orange.shade50,
           ],
         ),
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.3), width: 1),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.3), width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.08),
+            color: Colors.orange.withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, -2),
           ),

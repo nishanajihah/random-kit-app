@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:random_kit_app/models/memory_game_state.dart';
 
 import '../services/memory_game_engine.dart';
 import '../models/memory_game_state.dart';
 import '../models/game_item.dart';
 import '../logics/visual_memory_game_logic.dart';
 import '../widgets/base_feature_screen.dart';
+import '../widgets/memory_game_widgets.dart';
 
 class VisualMemoryGameScreen extends StatefulWidget {
   const VisualMemoryGameScreen({super.key});
@@ -21,6 +21,8 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
   late MemoryGameEngine _gameEngine;
   MemoryGameState _gameState = const MemoryGameState();
   String? _currentHighlightedColorId;
+  bool _showCountdown = false;
+  bool _gameStarted = false;
 
   @override
   void initState() {
@@ -38,11 +40,18 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
 
   Future<void> _startGame() async {
     setState(() {
+      _gameStarted = true;
       _gameState = _gameEngine.startNewGame();
+      _showCountdown = true;
     });
 
-    // Small delay before showing first sequence
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Wait for countdown to complete
+    await Future.delayed(const Duration(milliseconds: 3800));
+
+    setState(() {
+      _showCountdown = false;
+    });
+
     await _showNextSequence();
   }
 
@@ -51,12 +60,15 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
       _gameState = _gameEngine.generateNextSequence();
     });
 
+    // Samll delay before sequence starts
+    await Future.delayed(const Duration(milliseconds: 500));
+
     // Play the sequence
     final items = _gameEngine.getSequenceItems();
     for (final item in items) {
       await _playColorItem(item as ColorGameItem);
       await Future.delayed(
-        const Duration(milliseconds: 300),
+        const Duration(milliseconds: 400),
       ); // Short gap between colors
     }
 
@@ -73,10 +85,10 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
     });
 
     // Light haptic feedback
-    HapticFeedback.lightImpact();
+    HapticFeedback.mediumImpact();
 
-    // Wait for duration
-    await Future.delayed(Duration(milliseconds: item.durationMs));
+    // Wait for duration (increased from 800ms to 1000ms for better visibility)
+    await Future.delayed(Duration(milliseconds: 1000));
 
     // Remove highlight
     setState(() {
@@ -95,7 +107,7 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
           id: colorId,
           displayName: color.name,
           colorValue: color.color.toARGB32(),
-          durationMs: 400,
+          durationMs: 300,
         ),
       );
     }
@@ -119,48 +131,15 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(20),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.sentiment_dissatisfied, color: Colors.red, size: 32),
-            SizedBox(width: 12),
-            Text('Game Over!'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Level Reached: ${_gameState.level}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Score: ${_gameState.score}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'High Score: ${_gameState.highScore}',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _startGame();
-            },
-            child: const Text(
-              'PLAY AGAIN',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
+      builder: (ctx) => GameOverDialog(
+        level: _gameState.level,
+        score: _gameState.score,
+        highScore: _gameState.highScore,
+        primaryColor: Colors.purple,
+        onPlayAgain: () {
+          Navigator.of(ctx).pop();
+          _startGame();
+        },
       ),
     );
   }
@@ -169,107 +148,86 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
     HapticFeedback.mediumImpact();
 
     // Show succes message briefly
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 1000));
 
-    // Advance to next level
-    await _showNextSequence();
+    // Start countdown for next level
     setState(() {
+      _showCountdown = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 3800));
+
+    setState(() {
+      _showCountdown = false;
       _gameState = _gameEngine.nextLevel();
     });
+
+    await _showNextSequence();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BaseFeatureScreen(
-        showHeader: true,
-        headerTitle: 'Random Kit+ Idle',
-        headerSubtitle: 'Color Memory Game',
-        onBackPressed: () => Navigator.of(context).pop(),
-        adUnitIdKey: 'ADMOB_BANNER_ID_VISUAL_GAME',
+      body: Stack(
         children: [
-          const SizedBox(height: 20),
+          BaseFeatureScreen(
+            showHeader: true,
+            headerTitle: 'Random Kit+ Idle',
+            headerSubtitle: 'Color Memory Game',
+            onBackPressed: () => Navigator.of(context).pop(),
+            adUnitIdKey: 'ADMOB_BANNER_ID_VISUAL_GAME',
+            children: [
+              const SizedBox(height: 20),
 
-          // Game info header
-          _buildGameInfo(),
-          const SizedBox(height: 30),
+              // Show start screen or game content
+              if (!_gameStarted)
+                StartGameScreen(
+                  onStart: _startGame,
+                  primaryColor: Colors.purple,
+                  gameName: 'Color Memory',
+                  instructions:
+                      'Watch the sequence of colors, then tap them in the same order. Each level adds one more color!',
+                )
+              else ...[
+                // Game stats header (only show when game started)
+                GameStatsHeader(
+                  level: _gameState.level,
+                  score: _gameState.score,
+                  highScore: _gameState.highScore,
+                  primaryColor: Colors.purple,
+                ),
+                const SizedBox(height: 30),
 
-          // Color grid
-          if (_gameState.status == GameStatus.idle)
-            _buildStartButton()
-          else
-            _buildColorGrid(),
+                // Color grid
+                _buildColorGrid(),
+                const SizedBox(height: 30),
 
-          const SizedBox(height: 30),
+                // Status message
+                StatusMessageBanner(
+                  message: _gameState.message ?? 'Ready',
+                  color: _getStatusColor(),
+                ),
 
-          // Status message
-          _buildStatusMessage(),
+                const SizedBox(height: 20),
+
+                // Progress indicator
+                if (_gameState.status == GameStatus.waitingForInput)
+                  _buildProgressIndicator(),
+              ],
+            ],
+          ),
+
+          // Countdown overlay
+          if (_showCountdown)
+            CountdownOverlay(
+              onComplete: () {
+                setState(() {
+                  _showCountdown = false;
+                });
+              },
+              primaryColor: Colors.purple,
+            ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildGameInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.purple.shade100, Colors.blue.shade100],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('Level', '${_gameState.level}', Icons.emoji_events),
-          _buildStatItem('Score', '${_gameState.score}', Icons.stars),
-          _buildStatItem(
-            'Best',
-            '${_gameState.highScore}',
-            Icons.workspace_premium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.purple[700], size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-      ],
-    );
-  }
-
-  Widget _buildStartButton() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: _startGame,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple,
-          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: const Text(
-          'START GAME',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
@@ -297,44 +255,59 @@ class _VisualMemoryGameScreenState extends State<VisualMemoryGameScreen> {
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
               color: Color(colorItem.colorValue),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isHighlighted ? Colors.white : Colors.transparent,
-                width: 4,
+                color: isHighlighted ? Colors.white : Colors.grey.shade300,
+                width: isHighlighted ? 6 : 2,
               ),
               boxShadow: [
                 BoxShadow(
                   color: isHighlighted
-                      ? Colors.white.withValues(alpha: 0.6)
-                      : Colors.black.withValues(alpha: 0.2),
-                  blurRadius: isHighlighted ? 20 : 8,
-                  spreadRadius: isHighlighted ? 4 : 0,
+                      ? Colors.white
+                      : Colors.black.withValues(alpha: 0.15),
+                  blurRadius: isHighlighted ? 30 : 8,
+                  spreadRadius: isHighlighted ? 8 : 0,
                 ),
+                if (isHighlighted)
+                  BoxShadow(
+                    color: Color(colorItem.colorValue),
+                    blurRadius: 40,
+                    spreadRadius: 5,
+                  ),
               ],
             ),
+            // Pulsing animation when highlighted
+            transform: isHighlighted
+                ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) // X, Y, Z
+                : Matrix4.identity(),
           ),
         );
       },
     );
   }
 
-  Widget _buildStatusMessage() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: _getStatusColor().withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _getStatusColor().withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        _gameState.message ?? 'Ready',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: _getStatusColor(),
+  Widget _buildProgressIndicator() {
+    return Column(
+      children: [
+        Text(
+          'Progress: ${_gameState.playerInput.length}/${_gameState.sequence.length}',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[700],
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        textAlign: TextAlign.center,
-      ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: _gameState.progress,
+            minHeight: 8,
+            backgroundColor: Colors.grey[200],
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.purple),
+          ),
+        ),
+      ],
     );
   }
 

@@ -2,19 +2,20 @@
 
 A Flutter app providing random utilities for everyday decisions and idle fun.
 
-![Version](https://img.shields.io/badge/version-1.5.0--alpha.1-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/platform-android-brightgreen?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-mit-orange?style=for-the-badge)
 
 ## Features
 
+- **Tic Tac Toe** - Classic X vs O game with Pass & Play and VS AI modes
+- **Color Game** - Visual memory pattern matching game
 - **Dice Roller** - Roll a standard 6-sided die
 - **Number Generator** - Generate random numbers with custom min/max range
 - **Coin Flipper** - Flip a coin for Heads or Tails
 - **Color Mixer** - Generate a random color code
 - **Wheel Spinner** - Decision Wheel Spinner
-- **Haptic Generator** - unique random vibration patterns
-- **Clean UI** - Modern hub-style navigation with feature cards
+- **Glassmorphism UI** - Redesigned UI system with modern glass headers & cards
 - **Ad-Supported** - Free to use with non-intrusive banner ads
 
 ## 🚀 Coming Soon
@@ -80,7 +81,7 @@ flutter run
 
 ## 📝 Version History
 
-**Current Version:** 1.5.0-alpha.1
+**Current Version:** 2.0.0 (Build 7)
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 

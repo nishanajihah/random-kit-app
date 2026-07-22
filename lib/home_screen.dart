@@ -9,7 +9,7 @@ import 'screens/coin_flipper_screen.dart';
 import 'screens/color_mixer_screen.dart';
 import 'screens/wheel_spinner_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/haptic_memory_game_screen.dart';
+import 'screens/tic_tac_toe_screen.dart';
 import 'screens/visual_memory_game_screen.dart';
 
 import 'widgets/ad_banner_widget.dart';
@@ -72,15 +72,15 @@ class HomeScreen extends StatelessWidget {
 
                           _buildModernFeatureCard(
                             context: context,
-                            icon: Icons.vibration,
-                            title: 'Haptic Game',
-                            subtitle: 'Feel the buzz',
+                            icon: Icons.grid_3x3,
+                            title: 'Tic Tac Toe',
+                            subtitle: 'X vs O Classic Game',
                             color: Colors.indigo,
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const HapticMemoryGameScreen(),
+                                    const TicTacToeScreen(),
                               ),
                             ),
                           ),

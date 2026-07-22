@@ -45,30 +45,4 @@ class ColorGameItem implements GameItem {
   }
 }
 
-// Concret implementation for Haptic-based items
-class HapticGameItem implements GameItem {
-  @override
-  final String id;
 
-  @override
-  final String displayName;
-
-  final List<int> vibrationPattern; // Vibration pattern in milliseconds
-
-  @override
-  final int durationMs;
-
-  HapticGameItem({
-    required this.id,
-    required this.displayName,
-    required this.vibrationPattern,
-    int? durationMs,
-  }) : durationMs = durationMs ?? vibrationPattern.reduce((a, b) => a + b);
-
-  @override
-  Future<void> play() async {
-    // This will be implemented in the screen
-    // The screen will handle triggering vibration
-    await Future.delayed(Duration(milliseconds: durationMs));
-  }
-}

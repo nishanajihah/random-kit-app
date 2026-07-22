@@ -55,6 +55,12 @@ android/key.properties
 *.keystore
 upload-keystore.jks
 
+# Android local & Gradle build artifacts
+android/.gradle/
+android/.kotlin/
+android/local.properties
+.gradle/
+
 # Ignore the entire 'example' directory
 example/
 

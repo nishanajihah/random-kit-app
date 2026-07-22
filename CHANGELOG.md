@@ -10,24 +10,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Planned
 
-- Settings
 - Dark mode support
 - Enhance Dice Feature
 - Enhance Number Generator
 - Enhance Coin Flip
 - Enhance Color Mixer
-- Enhance Wheel Spineer
-- Enhance Haptic Generator
+- Enhance Wheel Spinner
 - Multiple Dice (2-6 dice at once)
 - Custom Dice (D4, D8, D12, D20)
 
-### In Progress
+---
 
-- Settings and Enhance Home Screen
+## [2.0.0] - 2026-07-23
 
-### Fixed Unreleased
+### Added
 
-- Nothing currently
+- **Tic Tac Toe Game (X vs O)** - Full-featured Tic Tac Toe mini-game with 2-player local pass & play and VS AI mode (with smart minimax decision making, win line animations, and score tracking).
+- **Color Game (Visual Memory)** - Interactive color sequence memory game.
+- **Settings Screen** - Comprehensive app settings and configuration options.
+- **Modern Glassmorphism UI System** - Redesigned home screen and feature screens with glowing gradients, neumorphic cards, glass headers, and ad banner integration.
+
+### Changed
+
+- App version bumped to `2.0.0+7` (Major Version 2.0.0, Build 7).
+- Updated Home Screen layout to display the modern Tic Tac Toe card.
+- Cleaned up build queue lock configuration and updated `.gitignore` for Android build artifacts.
+
+### Removed
+
+- Removed legacy Haptic Memory Game implementation (`haptic_memory_game_screen.dart`, `haptic_memory_game_logic.dart`, `haptic_generator_logic.dart`, `HapticGameItem`).
 
 ---
 

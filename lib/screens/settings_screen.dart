@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../widgets/ad_banner_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -46,28 +47,389 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _sendEmail() async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'nishanajihah.dev@gmail.com',
-      query: 'subject=Random Kit+ Idle Feedback',
-    );
+  void _showContactSupportDialog() {
+    String selectedCategory = 'General Inquiry';
+    final emailController = TextEditingController();
+    final messageController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
-    try {
-      if (!await launchUrl(emailUri)) {
-        throw Exception('Could not launch email');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No email app found. Please email: nishanajihah.dev@gmail.com',
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent accidental dismissal on click outside
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 16,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 420, maxHeight: 620),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header Row with Title, Email & Close Button (X)
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFF4750A), Color(0xFFE65100)],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFF4750A).withAlpha(80),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.support_agent_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Contact Support',
+                                style: TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                'nishanajihah.dev@gmail.com',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFF4750A),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Dedicated Close Button (X)
+                        IconButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          icon: const Icon(Icons.close_rounded),
+                          color: Colors.grey[600],
+                          tooltip: 'Close',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(height: 1),
+                    const SizedBox(height: 16),
+
+                    // Scrollable Input Content
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Category Template',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              // Segmented template buttons
+                              Row(
+                                children: [
+                                  _buildTemplateChip(
+                                    label: 'General',
+                                    icon: Icons.chat_bubble_outline_rounded,
+                                    isSelected: selectedCategory == 'General Inquiry',
+                                    onTap: () => setDialogState(
+                                      () => selectedCategory = 'General Inquiry',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _buildTemplateChip(
+                                    label: 'Bug Report',
+                                    icon: Icons.bug_report_outlined,
+                                    isSelected: selectedCategory == 'Bug Report',
+                                    onTap: () => setDialogState(
+                                      () => selectedCategory = 'Bug Report',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _buildTemplateChip(
+                                    label: 'Idea',
+                                    icon: Icons.lightbulb_outline_rounded,
+                                    isSelected: selectedCategory == 'Feature Idea',
+                                    onTap: () => setDialogState(
+                                      () => selectedCategory = 'Feature Idea',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 18),
+
+                              // User Email Box
+                              const Text(
+                                'Your Email',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (val) {
+                                  if (val == null || val.trim().isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!val.contains('@')) {
+                                    return 'Enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'e.g. user@example.com',
+                                  prefixIcon: const Icon(
+                                    Icons.email_outlined,
+                                    color: Color(0xFFF4750A),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.orange.shade50.withAlpha(120),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(
+                                      color: Colors.orange.shade200,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(
+                                      color: Colors.orange.shade200,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFF4750A),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+
+                              // Message Input Box (Expands for long text with scroll support)
+                              const Text(
+                                'Message',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: messageController,
+                                minLines: 5,
+                                maxLines: 10,
+                                keyboardType: TextInputType.multiline,
+                                validator: (val) {
+                                  if (val == null || val.trim().isEmpty) {
+                                    return 'Please enter your message';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Type your message or details here...',
+                                  filled: true,
+                                  fillColor: Colors.grey.shade50,
+                                  contentPadding: const EdgeInsets.all(16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFF4750A),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Action Buttons Row: CANCEL and SEND
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.grey[700],
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(
+                                color: Colors.grey.shade400,
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'CANCEL',
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              if (formKey.currentState?.validate() ?? false) {
+                                final userEmail = emailController.text.trim();
+                                final userMessage = messageController.text.trim();
+
+                                final Uri emailUri = Uri(
+                                  scheme: 'mailto',
+                                  path: 'nishanajihah.dev@gmail.com',
+                                  queryParameters: {
+                                    'subject':
+                                        '[$selectedCategory] Random Kit+ Idle',
+                                    'body':
+                                        'From: $userEmail\nCategory: $selectedCategory\n\nMessage:\n$userMessage',
+                                  },
+                                );
+
+                                Navigator.of(ctx).pop();
+
+                                final messenger = ScaffoldMessenger.of(context);
+                                try {
+                                  if (!await launchUrl(
+                                    emailUri,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    throw Exception('Could not open email app');
+                                  }
+                                } catch (e) {
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                        'Email app unavailable. Please send directly to nishanajihah.dev@gmail.com',
+                                      ),
+                                      backgroundColor: Colors.orange.shade800,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.send_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'SEND',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFF4750A),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 4,
+                              shadowColor: const Color(0xFFF4750A).withAlpha(140),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTemplateChip({
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFF4750A) : Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color:
+                  isSelected ? const Color(0xFFF4750A) : Colors.grey.shade300,
+              width: 1.5,
             ),
           ),
-        );
-      }
-    }
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: isSelected ? Colors.white : Colors.grey[700],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? Colors.white : Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showAboutDialog() {
@@ -260,7 +622,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                     onTap: null,
                                   ),
-                                  'Terms & Conditions Page in building',
+                                  'Terms Page in building',
                                 ),
                         ],
                       ),
@@ -268,43 +630,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 30),
 
                     // Support Section
-                    _buildSectionHeader('SUPPORT'),
+                    _buildSectionHeader('SUPPORT & FEEDBACK'),
                     const SizedBox(height: 12),
                     _buildNeumorphicCard(
                       child: Column(
                         children: [
                           _buildListTile(
-                            icon: Icons.email_outlined,
-                            title: 'Send Feedback',
-                            subtitle: 'Help us improve',
+                            icon: Icons.mail_outline,
+                            title: 'Contact Support',
+                            subtitle: 'Send us an email',
                             gradient: const LinearGradient(
                               colors: [Colors.orange, Colors.deepOrange],
                             ),
-                            onTap: _sendEmail,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Divider(height: 1, color: Colors.grey[200]),
-                          ),
-                          _buildListTile(
-                            icon: Icons.star_outline,
-                            title: 'Rate App',
-                            subtitle: 'Rate us on the store',
-                            gradient: const LinearGradient(
-                              colors: [Colors.amber, Colors.orange],
-                            ),
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Opening app store...'),
-                                  backgroundColor: Colors.orange,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
+                            onTap: _showContactSupportDialog,
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -385,15 +723,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 GestureDetector(
                                   onTap: () => _launchURL(
                                     'https://linktree.com/nisha.najihah',
-                                  ), // Change to your link
-                                  child: Text(
+                                  ),
+                                  child: const Text(
                                     'Nisha Najihah',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.black87,
                                       fontWeight: FontWeight.bold,
                                       decoration: TextDecoration.none,
-                                      decorationColor: Colors.black87,
                                     ),
                                   ),
                                 ),
@@ -411,10 +748,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
+
+              // Bottom Banner Ad Widget
+              _buildEnhancedAdBanner(context),
             ],
           ),
         ),
@@ -531,30 +871,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildNeumorphicCard({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[200]!, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            offset: const Offset(6, 6),
-            blurRadius: 12,
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey[200]!, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              offset: const Offset(6, 6),
+              blurRadius: 12,
+            ),
+            const BoxShadow(
+              color: Colors.white,
+              offset: Offset(-6, -6),
+              blurRadius: 12,
+            ),
+            BoxShadow(
+              color: Colors.orange.withAlpha(13),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Material(
+            color: Colors.transparent,
+            child: child,
           ),
-          const BoxShadow(
-            color: Colors.white,
-            offset: Offset(-6, -6),
-            blurRadius: 12,
-          ),
-          BoxShadow(
-            color: Colors.orange.withAlpha(13),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        ),
       ),
-      child: child,
     );
   }
 
@@ -632,11 +981,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 ),
-                alignment: Alignment.centerLeft, // Align box to the left
+                alignment: Alignment.centerLeft,
                 child: Container(
-                  margin: const EdgeInsets.only(
-                    left: 16,
-                  ), // Add some margin from left edge
+                  margin: const EdgeInsets.only(left: 16),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -672,6 +1019,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEnhancedAdBanner(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.95),
+            Colors.white.withValues(alpha: 0.85),
+          ],
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        border: Border(
+          top: BorderSide(
+            color: Colors.white.withValues(alpha: 0.4),
+            width: 1.5,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 16,
+            spreadRadius: 2,
+            offset: const Offset(0, -4),
+          ),
+          BoxShadow(
+            color: Colors.orange.withValues(alpha: 0.15),
+            blurRadius: 8,
+            spreadRadius: 1,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
+          const AdBannerWidget(adUnitIdKey: 'ADMOB_BANNER_ID_SETTING'),
+          SizedBox(
+            height: MediaQuery.of(context).viewPadding.bottom > 0
+                ? MediaQuery.of(context).viewPadding.bottom
+                : 4.0,
+          ),
+        ],
+      ),
     );
   }
 }

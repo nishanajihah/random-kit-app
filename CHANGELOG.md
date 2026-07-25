@@ -21,6 +21,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.1.0] - 2026-07-26
+
+### Added
+
+- **Persistent High Score Engine (`HighScoreService`)** - Best scores in Color Memory Game are now persisted locally using `shared_preferences` across app restarts.
+- **In-App Contact Support Dialog** - Interactive feedback modal in Settings screen featuring category templates (General, Bug Report, Idea), email input, multiline message box, top `(X)` close button, and `nishanajihah.dev@gmail.com` dispatching.
+
+### Changed
+
+- **Color Memory Game UI & Sizing Overhaul**:
+  - Applied Brand Orange (`#F4750A`) theme across start overlay, buttons, and progress bar.
+  - Replaced central play arrow with interactive brain memory icon (`Icons.psychology_rounded`).
+  - Matched `GameStatsHeader` and `StatusMessageBanner` font sizes to Tic Tac Toe cards.
+  - Fixed color grid height (310px) with `Clip.none` padding to prevent layout shifting and clip-free highlight glow animations.
+  - Level grid expansion fine-tuned with 1.0 square aspect ratio boxes.
+  - Redesigned `GameOverDialog` with wider layout, persistent high score display, and symmetrical `EXIT GAME` & `PLAY AGAIN` control buttons.
+- **Tic Tac Toe Visual & Font Refinements**:
+  - Redesigned header into 3 score cards (`PLAYER X`, `DRAWS`, `PLAYER O / AI`).
+  - Applied Brand Orange theme to board grid, status banner, mode toggle, and control buttons.
+  - Standardized consistent 16px vertical gaps between all layout sections to eliminate screen scrolling.
+- App version bumped to `2.1.0+8`.
+
+---
+
 ## [2.0.0] - 2026-07-23
 
 ### Added

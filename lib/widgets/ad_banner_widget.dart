@@ -15,34 +15,41 @@ class AdBannerWidget extends StatefulWidget {
 }
 
 class _AdBannerWidgetState extends State<AdBannerWidget> {
-  late BannerAd _bannerAd;
+  BannerAd? _bannerAd;
   bool _isAdLoaded = false;
-
   bool _adFailedToLoad = false;
   int _adRetryAttempt = 0;
-  final int _maxRetryAttempts = 3;
+  final int _maxRetryAttempts = 5;
 
   @override
   void initState() {
     super.initState();
-    _loadBannerAd();
+    // Wait until the layout tree has completed rendering before requesting banner ad
+    // This prevents "Invalid ad width or height: (0, 0)" errors
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadBannerAd();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _bannerAd.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
   void _loadBannerAd() {
-    // Get the ad unit ID from environment variables
     final adUnitId =
         dotenv.env[widget.adUnitIdKey] ??
         'ca-app-pub-3940256099942544/6300978111';
 
     AppLogger.debug(
-      '🎯 Loading ad (attempt ${_adRetryAttempt + 1}/$_maxRetryAttempts) with ID: $adUnitId',
+      '🎯 Loading ad (attempt ${_adRetryAttempt + 1}/$_maxRetryAttempts) for key [${widget.adUnitIdKey}] with ID: $adUnitId',
     );
+
+    // Clean up existing ad instance before re-creating
+    _bannerAd?.dispose();
 
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
@@ -69,78 +76,58 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
               _adFailedToLoad = true;
             });
 
-            // Retry logic for network errors
-            if (error.code == 2 && _adRetryAttempt < _maxRetryAttempts) {
+            // Retry logic for network / initial DNS delays
+            if (_adRetryAttempt < _maxRetryAttempts) {
               _adRetryAttempt++;
-              AppLogger.info('🔄 Retrying ad load in 5 seconds...');
+              final delaySeconds = _adRetryAttempt * 3;
+              AppLogger.info('🔄 Retrying ad load in $delaySeconds seconds...');
 
-              Future.delayed(const Duration(seconds: 5), () {
+              Future.delayed(Duration(seconds: delaySeconds), () {
                 if (mounted) {
                   _loadBannerAd();
                 }
               });
             } else {
-              AppLogger.warning(
-                '⚠️ Max retry attempts reached or non-network error',
-              );
+              AppLogger.warning('! ! Max retry attempts reached for ${widget.adUnitIdKey}');
             }
           }
         },
       ),
     );
-    _bannerAd.load();
+
+    _bannerAd?.load();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isAdLoaded) {
-      // Center the ad banner - responsive to screen width
-      return Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width,
-          ),
-          child: SizedBox(
-            height: _bannerAd.size.height.toDouble(),
-            width: _bannerAd.size.width.toDouble(),
-            child: AdWidget(ad: _bannerAd),
-          ),
-        ),
-      );
-    } else if (_adFailedToLoad) {
-      return Container(
-        height: 50,
-        width: double.infinity,
-        color: Colors.grey[200],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.wifi_off, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                'Ad unavailable - Check internet connection',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        height: 50,
-        width: double.infinity,
-        color: Colors.grey[100],
-        child: const Center(
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
+    if (_isAdLoaded && _bannerAd != null) {
+      return SizedBox(
+        width: _bannerAd!.size.width.toDouble(),
+        height: _bannerAd!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd!),
       );
     }
+
+    if (_adFailedToLoad) {
+      return const SizedBox.shrink();
+    }
+
+    // Placeholder box with subtle loading spinner while banner loads
+    return Container(
+      width: AdSize.banner.width.toDouble(),
+      height: AdSize.banner.height.toDouble(),
+      alignment: Alignment.center,
+      color: Colors.transparent,
+      child: SizedBox(
+        width: 18,
+        height: 18,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.0,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Colors.orange.withAlpha(150),
+          ),
+        ),
+      ),
+    );
   }
 }

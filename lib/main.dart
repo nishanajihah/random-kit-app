@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -7,7 +8,6 @@ import 'utils/app_logger.dart';
 import 'home_screen.dart';
 import 'screens/network_gate_screen.dart';
 import 'services/device_capability_service.dart';
-// import 'dice_roller_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,11 +15,10 @@ Future<void> main() async {
   // Make the app draw edge-to-edge
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.transparent, // Makes nav bar transparent
+      systemNavigationBarColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
-  // Edge to edge
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Determine which environment file to load
@@ -27,6 +26,7 @@ Future<void> main() async {
     'ENVIRONMENT',
     defaultValue: 'development',
   );
+  
   // Initialize logger
   AppLogger.initialize(environment);
   AppLogger.info('🚀 App starting...');
@@ -36,15 +36,17 @@ Future<void> main() async {
   await dotenv.load(fileName: '.env.$environment');
   AppLogger.debug('📱 Banner ID: ${dotenv.env['ADMOB_BANNER_ID']}');
 
-  // Initialize AdMob
-  await MobileAds.instance.initialize();
-  AppLogger.info('✅ AdMob initialized');
-
-  // Perform Device Hardware Capability Scan
-  await DeviceCapabilityService().scanCapabilities();
-
-  // Run the app
+  // Launch UI immediately to attach window to engine
   runApp(const RandomKitApp());
+
+  // Non-blocking initialization of AdMob and background services
+  unawaited(
+    MobileAds.instance.initialize().then((_) {
+      AppLogger.info('✅ AdMob initialized');
+    }),
+  );
+
+  unawaited(DeviceCapabilityService().scanCapabilities());
 }
 
 class RandomKitApp extends StatelessWidget {
@@ -54,9 +56,12 @@ class RandomKitApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Random Kit+ Idle',
-      theme: ThemeData(primaryColor: Color(0xFFf4750a), useMaterial3: true),
+      theme: ThemeData(
+        primaryColor: const Color(0xFFf4750a),
+        useMaterial3: true,
+      ),
       home: const NetworkGateScreen(child: HomeScreen()),
-      // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

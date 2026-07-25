@@ -36,20 +36,31 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
     super.dispose();
   }
 
-  // Actually check if we can reach the internet
+  /// Verifies real internet connectivity by probing fast DNS endpoints:
+  /// 1. Cloudflare DNS IP (1.1.1.1) - avoids local DNS delay
+  /// 2. Google (google.com) - secondary check
   Future<bool> _hasRealInternetAccess() async {
     try {
-      // Try to reach Google's DNS (reliable and fast)
-      final result = await InternetAddress.lookup(
-        'google.com',
-      ).timeout(const Duration(seconds: 5));
+      // Primary check: Direct IP lookup to Cloudflare DNS (1.1.1.1) to bypass DNS lookup overhead
+      final resultIp = await InternetAddress.lookup('1.1.1.1').timeout(
+        const Duration(seconds: 4),
+      );
+      if (resultIp.isNotEmpty && resultIp[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } catch (_) {
+      // Fall through to domain check if IP ping fails
+    }
 
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    try {
+      // Secondary check: Hostname lookup to google.com
+      final resultDomain = await InternetAddress.lookup('google.com').timeout(
+        const Duration(seconds: 4),
+      );
+      return resultDomain.isNotEmpty && resultDomain[0].rawAddress.isNotEmpty;
     } on SocketException catch (_) {
-      // No internet access
       return false;
     } on TimeoutException catch (_) {
-      // Timeout means no reliable connection
       return false;
     } catch (e) {
       AppLogger.error('Internet check error', e);
@@ -63,14 +74,12 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
     });
 
     try {
-      // First check if device has connectivity
       final results = await Connectivity().checkConnectivity();
       final hasConnectivity =
           results.isNotEmpty &&
           results.any((result) => result != ConnectivityResult.none);
 
       if (!hasConnectivity) {
-        // Not even connected to WiFi/data
         if (mounted) {
           setState(() {
             _hasInternetAccess = false;
@@ -81,7 +90,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
         return;
       }
 
-      // Has connectivity, now check actual internet access
       final hasInternet = await _hasRealInternetAccess();
 
       if (mounted) {
@@ -93,9 +101,7 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
         if (hasInternet) {
           AppLogger.info('✅ Real internet access verified - allowing app');
         } else {
-          AppLogger.warning(
-            '⚠️ Connected but no internet (captive portal?) - blocking app',
-          );
+          AppLogger.warning('⚠️ Connected but no internet - blocking app');
         }
       }
     } catch (e) {
@@ -118,15 +124,13 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
           results.any((result) => result != ConnectivityResult.none);
 
       if (!hasConnectivity) {
-        // Lost connectivity
         if (mounted) {
           setState(() {
             _hasInternetAccess = false;
           });
-          AppLogger.warning('📵 Connectivity lost - blocking app');
+          AppLogger.warning('断线 📵 Connectivity lost - blocking app');
         }
       } else {
-        // Gained connectivity - verify real internet
         AppLogger.info(
           '📶 Connectivity detected - verifying internet access...',
         );
@@ -149,21 +153,20 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
     });
   }
 
-  // Periodic check every 30 seconds (in case of captive portal changes)
   void _startPeriodicCheck() {
-    _periodicCheckTimer = Timer.periodic(const Duration(seconds: 30), (
+    _periodicCheckTimer = Timer.periodic(const Duration(seconds: 15), (
       _,
     ) async {
-      if (!_hasInternetAccess && mounted) {
-        // Only check if currently blocked
-        final hasInternet = await _hasRealInternetAccess();
-        if (mounted && hasInternet != _hasInternetAccess) {
-          setState(() {
-            _hasInternetAccess = hasInternet;
-          });
-          if (hasInternet) {
-            AppLogger.info('✅ Periodic check: Internet restored');
-          }
+      if (!mounted) return;
+      final hasInternet = await _hasRealInternetAccess();
+      if (mounted && hasInternet != _hasInternetAccess) {
+        setState(() {
+          _hasInternetAccess = hasInternet;
+        });
+        if (hasInternet) {
+          AppLogger.info('✅ Periodic check: Internet restored');
+        } else {
+          AppLogger.warning('⚠️ Periodic check: Internet lost - blocking app');
         }
       }
     });
@@ -178,7 +181,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Show loading while checking
     if (_isChecking) {
       return Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
@@ -188,7 +190,7 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
                 ),
@@ -231,18 +233,15 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
       );
     }
 
-    // If online with real internet, show the app
     if (_hasInternetAccess) {
       return widget.child;
     }
 
-    // If offline or no real internet, show network required screen
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Responsive sizing
             final isSmallScreen = constraints.maxHeight < 600;
             final iconSize = isSmallScreen ? 80.0 : 100.0;
             final titleSize = isSmallScreen ? 20.0 : 24.0;
@@ -258,7 +257,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // WiFi off icon with better contrast
                       Container(
                         width: iconSize,
                         height: iconSize,
@@ -274,7 +272,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                       ),
                       SizedBox(height: isSmallScreen ? 24 : 32),
 
-                      // Title
                       Text(
                         'No Internet Connection',
                         style: TextStyle(
@@ -293,7 +290,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                       ),
                       SizedBox(height: isSmallScreen ? 16 : 20),
 
-                      // Better contrast box for bullet points
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -332,7 +328,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                       ),
                       SizedBox(height: isSmallScreen ? 28 : 36),
 
-                      // Better contrast retry button
                       ElevatedButton.icon(
                         onPressed: _manualRetry,
                         icon: const Icon(Icons.refresh, size: 20),
@@ -359,7 +354,6 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Auto-check message with better contrast
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -369,8 +363,8 @@ class _NetworkGateScreenState extends State<NetworkGateScreen> {
                           color: Colors.black.withAlpha(51),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          'Auto-checking every 30 seconds',
+                        child: const Text(
+                          'Auto-checking connection...',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white,

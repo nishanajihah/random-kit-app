@@ -1,5 +1,6 @@
 // lib/screens/tic_tac_toe_screen.dart
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../logics/tic_tac_toe_logic.dart';
@@ -16,13 +17,15 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   late TicTacToeLogic _game;
   bool _isAiThinking = false;
 
+  static const Color _brandOrange = Color(0xFFF4750A);
+
   @override
   void initState() {
     super.initState();
     _game = TicTacToeLogic(mode: TicTacToeMode.singlePlayer);
   }
 
-  void _onCellTapped(int index) async {
+  void _onCellTapped(int index) {
     if (_isAiThinking || _game.isGameOver || _game.board[index].isNotEmpty) {
       return;
     }
@@ -38,14 +41,18 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       return;
     }
 
-    // AI Turn in Single Player mode
-    if (_game.mode == TicTacToeMode.singlePlayer && _game.currentPlayer == 'O') {
-      setState(() {
-        _isAiThinking = true;
-      });
+    if (_game.mode == TicTacToeMode.singlePlayer &&
+        _game.currentPlayer == 'O') {
+      _triggerAiMove();
+    }
+  }
 
-      await Future.delayed(const Duration(milliseconds: 400));
+  void _triggerAiMove() {
+    setState(() {
+      _isAiThinking = true;
+    });
 
+    Timer(const Duration(milliseconds: 350), () {
       if (!mounted) return;
 
       final aiIndex = _game.getAiMove();
@@ -64,7 +71,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           _isAiThinking = false;
         });
       }
-    }
+    });
   }
 
   void _switchMode(TicTacToeMode newMode) {
@@ -82,29 +89,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       _isAiThinking = false;
     });
 
-    // If AI starts first in Single Player mode
-    if (_game.mode == TicTacToeMode.singlePlayer && _game.currentPlayer == 'O') {
+    if (_game.mode == TicTacToeMode.singlePlayer &&
+        _game.currentPlayer == 'O') {
       _triggerAiMove();
-    }
-  }
-
-  void _triggerAiMove() async {
-    setState(() {
-      _isAiThinking = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    final aiIndex = _game.getAiMove();
-    if (aiIndex != -1) {
-      HapticFeedback.lightImpact();
-      setState(() {
-        _game.makeMove(aiIndex);
-        _isAiThinking = false;
-      });
-    } else {
-      setState(() {
-        _isAiThinking = false;
-      });
     }
   }
 
@@ -118,44 +105,49 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseFeatureScreen(
-      adUnitIdKey: 'ADMOB_BANNER_ID_TIC_TAC_TOE',
-      showHeader: true,
-      headerTitle: 'Tic Tac Toe',
-      headerSubtitle: 'Classic X & O game',
-      onBackPressed: () => Navigator.pop(context),
-      children: [
-        // Mode Selector Toggle
-        _buildModeSelector(),
-        const SizedBox(height: 16),
+    return Scaffold(
+      body: BaseFeatureScreen(
+        adUnitIdKey: 'ADMOB_BANNER_ID_TIC_TAC_TOE',
+        showHeader: true,
+        headerTitle: 'Tic Tac Toe',
+        headerSubtitle: 'Classic X & O Game',
+        onBackPressed: () => Navigator.pop(context),
+        children: [
+          const SizedBox(height: 6),
 
-        // Scoreboard
-        _buildScoreboard(),
-        const SizedBox(height: 20),
+          // 1. Mode Selector Toggle (Brand Orange Theme)
+          _buildModeSelector(),
+          const SizedBox(height: 16),
 
-        // Status Indicator Banner
-        _buildStatusBanner(),
-        const SizedBox(height: 20),
+          // 2. Scoreboard Cards (Prominent 3-Card Header)
+          _buildScoreboard(),
+          const SizedBox(height: 16),
 
-        // 3x3 Game Board
-        _buildGameBoard(),
-        const SizedBox(height: 24),
+          // 3. Status Indicator Banner (Large & High Contrast)
+          _buildStatusBanner(),
+          const SizedBox(height: 16),
 
-        // Control Buttons
-        _buildControlButtons(),
-      ],
+          // 4. Responsive 3x3 Game Board
+          _buildGameBoard(),
+          const SizedBox(height: 16),
+
+          // 5. Control Buttons (Enlarged Brand Orange Theme)
+          _buildControlButtons(),
+        ],
+      ),
     );
   }
 
   Widget _buildModeSelector() {
     return Container(
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(200),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white, width: 1.5),
+        color: Colors.orange.shade50.withAlpha(200),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orange.shade200, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(15),
+            color: _brandOrange.withAlpha(20),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -165,14 +157,15 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildModeButton(
-            title: 'vs AI',
-            icon: Icons.smart_toy_outlined,
+            title: 'VS AI',
+            icon: Icons.smart_toy_rounded,
             isSelected: _game.mode == TicTacToeMode.singlePlayer,
             onTap: () => _switchMode(TicTacToeMode.singlePlayer),
           ),
+          const SizedBox(width: 4),
           _buildModeButton(
-            title: '2 Players',
-            icon: Icons.people_outline,
+            title: '2 PLAYERS',
+            icon: Icons.people_alt_rounded,
             isSelected: _game.mode == TicTacToeMode.twoPlayer,
             onTap: () => _switchMode(TicTacToeMode.twoPlayer),
           ),
@@ -191,14 +184,14 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.orange : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected ? _brandOrange : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.orange.withAlpha(76),
+                    color: _brandOrange.withAlpha(100),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -209,15 +202,16 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           children: [
             Icon(
               icon,
-              size: 18,
+              size: 19,
               color: isSelected ? Colors.white : Colors.grey[700],
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 7),
             Text(
               title,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 fontSize: 14,
+                letterSpacing: 0.6,
                 color: isSelected ? Colors.white : Colors.grey[800],
               ),
             ),
@@ -228,58 +222,99 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   }
 
   Widget _buildScoreboard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(235),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withAlpha(30),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildScoreItem('Player X', '${_game.xWins}', Colors.indigo),
-          Container(height: 30, width: 1, color: Colors.grey[300]),
-          _buildScoreItem('Draws', '${_game.draws}', Colors.grey.shade700),
-          Container(height: 30, width: 1, color: Colors.grey[300]),
-          _buildScoreItem(
-            _game.mode == TicTacToeMode.singlePlayer ? 'AI (O)' : 'Player O',
-            '${_game.oWins}',
-            Colors.deepOrange,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScoreItem(String label, String score, Color color) {
-    return Column(
+    return Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
+        Expanded(
+          child: _buildScoreCard(
+            label: 'PLAYER X',
+            score: '${_game.xWins}',
+            color: Colors.blue.shade700,
+            bgGradient: [Colors.blue.shade50, Colors.blue.shade100.withAlpha(120)],
+            borderColor: Colors.blue.shade200,
+            icon: Icons.close_rounded,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          score,
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: color,
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildScoreCard(
+            label: 'DRAWS',
+            score: '${_game.draws}',
+            color: Colors.grey.shade700,
+            bgGradient: [Colors.grey.shade100, Colors.grey.shade200.withAlpha(120)],
+            borderColor: Colors.grey.shade300,
+            icon: Icons.drag_handle_rounded,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildScoreCard(
+            label: _game.mode == TicTacToeMode.singlePlayer ? 'AI (O)' : 'PLAYER O',
+            score: '${_game.oWins}',
+            color: _brandOrange,
+            bgGradient: [Colors.orange.shade50, Colors.orange.shade100.withAlpha(120)],
+            borderColor: Colors.orange.shade300,
+            icon: Icons.panorama_fish_eye_rounded,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildScoreCard({
+    required String label,
+    required String score,
+    required Color color,
+    required List<Color> bgGradient,
+    required Color borderColor,
+    required IconData icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: bgGradient),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: borderColor, width: 1.8),
+        boxShadow: [
+          BoxShadow(
+            color: color.withAlpha(25),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.grey[700],
+                    letterSpacing: 0.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            score,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: color,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -290,48 +325,59 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
 
     if (_game.winner == 'X') {
       statusText = 'Player X Wins!';
-      statusColor = Colors.indigo;
-      statusIcon = Icons.emoji_events;
+      statusColor = Colors.blue.shade700;
+      statusIcon = Icons.emoji_events_rounded;
     } else if (_game.winner == 'O') {
       statusText = _game.mode == TicTacToeMode.singlePlayer
           ? 'AI Wins!'
           : 'Player O Wins!';
-      statusColor = Colors.deepOrange;
-      statusIcon = Icons.emoji_events;
+      statusColor = _brandOrange;
+      statusIcon = Icons.emoji_events_rounded;
     } else if (_game.winner == 'Draw') {
       statusText = "It's a Draw!";
       statusColor = Colors.grey.shade800;
-      statusIcon = Icons.handshake;
+      statusIcon = Icons.handshake_rounded;
     } else if (_isAiThinking) {
       statusText = 'AI is thinking...';
-      statusColor = Colors.deepOrange;
-      statusIcon = Icons.smart_toy;
+      statusColor = _brandOrange;
+      statusIcon = Icons.smart_toy_rounded;
     } else {
       statusText = "Player ${_game.currentPlayer}'s Turn";
-      statusColor =
-          _game.currentPlayer == 'X' ? Colors.indigo : Colors.deepOrange;
-      statusIcon = _game.currentPlayer == 'X' ? Icons.close : Icons.circle_outlined;
+      statusColor = _game.currentPlayer == 'X'
+          ? Colors.blue.shade700
+          : _brandOrange;
+      statusIcon = _game.currentPlayer == 'X'
+          ? Icons.close_rounded
+          : Icons.panorama_fish_eye_rounded;
     }
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
         color: statusColor.withAlpha(25),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: statusColor.withAlpha(100), width: 1.5),
+        border: Border.all(color: statusColor.withAlpha(120), width: 2.0),
+        boxShadow: [
+          BoxShadow(
+            color: statusColor.withAlpha(30),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(statusIcon, color: statusColor, size: 20),
+          Icon(statusIcon, color: statusColor, size: 24),
           const SizedBox(width: 10),
           Text(
             statusText,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
               color: statusColor,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -340,47 +386,52 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   }
 
   Widget _buildGameBoard() {
-    return Container(
-      width: 300,
-      height: 300,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(240),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(25),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final boardSize = (constraints.maxWidth * 0.85).clamp(240.0, 280.0);
+
+        return Container(
+          width: boardSize,
+          height: boardSize,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Colors.orange.shade200, width: 2.5),
+            boxShadow: [
+              BoxShadow(
+                color: _brandOrange.withAlpha(40),
+                blurRadius: 24,
+                spreadRadius: 2,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          BoxShadow(
-            color: Colors.orange.withAlpha(40),
-            blurRadius: 25,
-            offset: const Offset(0, 4),
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: 9,
+            itemBuilder: (context, index) => _buildGridCell(index, boardSize),
           ),
-        ],
-      ),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: 9,
-        itemBuilder: (context, index) => _buildGridCell(index),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildGridCell(int index) {
+  Widget _buildGridCell(int index, double boardSize) {
     final value = _game.board[index];
     final isWinningCell = _game.winningLine?.contains(index) ?? false;
+    final iconSize = boardSize * 0.16;
 
-    Color cellColor = Colors.orange.shade50.withAlpha(180);
+    Color cellColor = Colors.orange.shade50.withAlpha(140);
     if (isWinningCell) {
-      cellColor = value == 'X' ? Colors.indigo.shade100 : Colors.orange.shade200;
+      cellColor = value == 'X'
+          ? Colors.blue.shade100
+          : Colors.orange.shade200;
     }
 
     return GestureDetector(
@@ -389,38 +440,36 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: cellColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isWinningCell
-                ? (value == 'X' ? Colors.indigo : Colors.deepOrange)
+                ? (value == 'X' ? Colors.blue.shade700 : _brandOrange)
                 : Colors.orange.shade100,
-            width: isWinningCell ? 3.0 : 1.5,
+            width: isWinningCell ? 3.5 : 1.8,
           ),
           boxShadow: isWinningCell
               ? [
                   BoxShadow(
-                    color: (value == 'X' ? Colors.indigo : Colors.deepOrange)
-                        .withAlpha(100),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  )
+                    color: (value == 'X' ? Colors.blue.shade700 : _brandOrange)
+                        .withAlpha(120),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
+                  ),
                 ]
               : [],
         ),
         child: Center(
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) => ScaleTransition(
-              scale: animation,
-              child: child,
-            ),
+            transitionBuilder: (child, animation) =>
+                ScaleTransition(scale: animation, child: child),
             child: value.isEmpty
                 ? const SizedBox.shrink(key: ValueKey('empty'))
                 : Icon(
-                    value == 'X' ? Icons.close : Icons.circle_outlined,
+                    value == 'X' ? Icons.close_rounded : Icons.panorama_fish_eye_rounded,
                     key: ValueKey('$index-$value'),
-                    size: 48,
-                    color: value == 'X' ? Colors.indigo : Colors.deepOrange,
+                    size: iconSize,
+                    color: value == 'X' ? Colors.blue.shade700 : _brandOrange,
                   ),
           ),
         ),
@@ -434,31 +483,45 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       children: [
         ElevatedButton.icon(
           onPressed: _resetRound,
-          icon: const Icon(Icons.refresh, color: Colors.white),
-          label: Text(_game.isGameOver ? 'Play Again' : 'Next Round'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 22),
+          label: Text(
+            _game.isGameOver ? 'PLAY AGAIN' : 'NEXT ROUND',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
             ),
-            elevation: 4,
-            shadowColor: Colors.orange.withAlpha(100),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _brandOrange,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 6,
+            shadowColor: _brandOrange.withAlpha(140),
           ),
         ),
-        const SizedBox(width: 12),
-        IconButton(
-          onPressed: _resetAll,
-          tooltip: 'Reset Score',
-          icon: Icon(Icons.restart_alt, color: Colors.orange.shade800),
-          style: IconButton.styleFrom(
-            backgroundColor: Colors.orange.shade50,
+        const SizedBox(width: 14),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.orange.shade50,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: Colors.orange.shade200, width: 1.8),
+            boxShadow: [
+              BoxShadow(
+                color: _brandOrange.withAlpha(20),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            onPressed: _resetAll,
+            tooltip: 'Reset Score',
+            icon: const Icon(Icons.restart_alt_rounded, color: _brandOrange, size: 28),
             padding: const EdgeInsets.all(14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.orange.shade200),
-            ),
           ),
         ),
       ],

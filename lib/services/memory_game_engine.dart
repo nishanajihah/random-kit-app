@@ -1,4 +1,4 @@
-// llib/services/memory_game_engine.dart
+// lib/services/memory_game_engine.dart
 
 import 'dart:math';
 import '../models/memory_game_state.dart';
@@ -28,24 +28,44 @@ class MemoryGameEngine {
       score: 0,
       highScore: _state.highScore,
       message: 'Watch the sequence!',
+      sequence: [],
+      playerInput: [],
     );
     return _state;
   }
 
-  // Generate a next sequence (adds one more item)
-  MemoryGameState generateNextSequence() {
+  // Restore state across grid size upgrades
+  void restoreState({
+    required int level,
+    required int score,
+    required int highScore,
+    required List<String> sequence,
+  }) {
+    _state = MemoryGameState(
+      status: GameStatus.idle,
+      level: level,
+      score: score,
+      highScore: highScore,
+      sequence: sequence,
+      playerInput: [],
+    );
+  }
+
+  // Generate a next sequence (preserves existing sequence and appends 1 new color item)
+  MemoryGameState generateNextSequence({List<String>? previousSequence}) {
+    final baseSequence = previousSequence ?? _state.sequence;
     final newItem = availableItems[_random.nextInt(availableItems.length)];
-    final newSequence = [..._state.sequence, newItem.id];
+    final newSequence = [...baseSequence, newItem.id];
 
     AppLogger.debug(
-      '🎯 Generated sequence for level ${_state.level}: $newSequence',
+      '🎯 Preserved & Appended sequence for level ${_state.level}: $newSequence',
     );
 
     _state = _state.copyWith(
       sequence: newSequence,
       playerInput: [],
       status: GameStatus.showingSequence,
-      message: 'Level ${_state.level}',
+      message: 'Level ${_state.level} - Watch carefully!',
     );
 
     return _state;
@@ -54,7 +74,13 @@ class MemoryGameEngine {
   /// Get the sequence of items to play
   List<GameItem> getSequenceItems() {
     return _state.sequence
-        .map((id) => availableItems.firstWhere((item) => item.id == id))
+        .map((id) {
+          try {
+            return availableItems.firstWhere((item) => item.id == id);
+          } catch (_) {
+            return availableItems[_random.nextInt(availableItems.length)];
+          }
+        })
         .toList();
   }
 
@@ -89,7 +115,7 @@ class MemoryGameEngine {
 
   // Handle wrong input
   MemoryGameState _handleWrongInput() {
-    AppLogger.info('Wronh input at level ${_state.level}. Game Over.');
+    AppLogger.info('Wrong input at level ${_state.level}. Game Over.');
 
     final newHighScore = _state.score > _state.highScore
         ? _state.score
@@ -106,8 +132,7 @@ class MemoryGameEngine {
 
   // Handle correct sequence completion
   MemoryGameState _handleCorrectSequence() {
-    final pointsEarned =
-        _state.level * 10; // Example scoring: 10 points per level
+    final pointsEarned = _state.level * 10;
     final newScore = _state.score + pointsEarned;
 
     AppLogger.info('Level ${_state.level} complete! +$pointsEarned points');
@@ -120,17 +145,17 @@ class MemoryGameEngine {
     return _state;
   }
 
-  // Advance to next level
+  // Advance to next level (retains existing sequence and appends 1 new color item)
   MemoryGameState nextLevel() {
+    final currentSeq = _state.sequence;
     _state = _state.copyWith(
       level: _state.level + 1,
       status: GameStatus.idle,
-      // message: 'Get ready for the next level!',
     );
-    return generateNextSequence();
+    return generateNextSequence(previousSequence: currentSeq);
   }
 
-  // Reset game completey
+  // Reset game completely
   MemoryGameState reset() {
     AppLogger.info('Resetting game.');
     final highScore = _state.highScore;
